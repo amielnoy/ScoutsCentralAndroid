@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.activity.OnBackPressedCallback;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
@@ -48,6 +49,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     toggle.syncState();
 
     navigationView.setNavigationItemSelectedListener(this);
+
+    getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+      @Override
+      public void handleOnBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+          drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+          setEnabled(false);
+          getOnBackPressedDispatcher().onBackPressed();
+        }
+      }
+    });
 
     if (savedInstanceState == null) {
       navigationView.setCheckedItem(R.id.nav_dashboard);
@@ -112,12 +125,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       .commit();
   }
 
-  @Override
-  public void onBackPressed() {
-    if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-      drawerLayout.closeDrawer(GravityCompat.START);
-      return;
-    }
-    super.onBackPressed();
-  }
 }
