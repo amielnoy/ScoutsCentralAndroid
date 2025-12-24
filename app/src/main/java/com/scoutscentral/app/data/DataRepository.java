@@ -17,11 +17,13 @@ public class DataRepository {
   private final MutableLiveData<List<Scout>> scouts = new MutableLiveData<>();
   private final MutableLiveData<List<Activity>> activities = new MutableLiveData<>();
   private final MutableLiveData<List<Announcement>> announcements = new MutableLiveData<>();
+  private final MutableLiveData<List<AttendanceRecord>> attendanceRecords = new MutableLiveData<>();
   private final MutableLiveData<Long> syncCompletedAt = new MutableLiveData<>();
   private final SupabaseService supabaseService = new SupabaseService();
 
   private DataRepository() {
     seedData();
+    attendanceRecords.setValue(new ArrayList<>());
     syncWithSupabase(false);
   }
 
@@ -88,6 +90,10 @@ public class DataRepository {
     return announcements;
   }
 
+  public LiveData<List<AttendanceRecord>> getAttendanceRecords() {
+    return attendanceRecords;
+  }
+
   public void refreshFromSupabase() {
     syncWithSupabase(true);
   }
@@ -142,6 +148,26 @@ public class DataRepository {
     runSupabaseTask(() -> supabaseService.upsertAnnouncement(newAnnouncement));
   }
 
+  public void saveAttendance(String activityId, List<String> presentScoutIds) {
+    runSupabaseTask(() -> {
+      supabaseService.saveAttendance(activityId, presentScoutIds);
+      List<AttendanceRecord> records = supabaseService.fetchAttendanceRecords();
+      attendanceRecords.postValue(records);
+    });
+  }
+
+  public List<String> fetchAttendanceForActivity(String activityId) {
+    if (!supabaseService.isConfigured()) {
+      return new ArrayList<>();
+    }
+    try {
+      return supabaseService.fetchAttendanceForActivity(activityId);
+    } catch (Exception ex) {
+      Log.e("DataRepository", "Supabase attendance fetch failed", ex);
+      return new ArrayList<>();
+    }
+  }
+
   private String isoNow() {
     return java.time.Instant.now().toString();
   }
@@ -171,6 +197,11 @@ public class DataRepository {
           announcements.postValue(remoteAnnouncements);
         } else {
           supabaseService.syncAnnouncements(announcements.getValue());
+        }
+
+        List<AttendanceRecord> remoteAttendance = supabaseService.fetchAttendanceRecords();
+        if (remoteAttendance != null) {
+          attendanceRecords.postValue(remoteAttendance);
         }
         if (notifyOnSuccess) {
           syncCompletedAt.postValue(System.currentTimeMillis());

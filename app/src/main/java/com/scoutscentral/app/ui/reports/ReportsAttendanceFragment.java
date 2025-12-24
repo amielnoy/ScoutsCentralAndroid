@@ -35,6 +35,6 @@ public class ReportsAttendanceFragment extends Fragment {
     list.setLayoutManager(new LinearLayoutManager(getContext()));
     list.setAdapter(adapter);
 
-    adapter.submitList(viewModel.getAttendanceData());
+    viewModel.getAttendanceRecords().observe(getViewLifecycleOwner(), adapter::submitList);
   }
 }

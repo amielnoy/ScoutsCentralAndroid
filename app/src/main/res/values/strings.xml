@@ -1,5 +1,5 @@
 <resources>
-  <string name="app_name">צופים סנטרל</string>
+  <string name="app_name"> צופים+</string>
   <string name="nav_dashboard">לוח מחוונים</string>
   <string name="nav_members">חברים</string>
   <string name="nav_activities">פעילויות</string>
@@ -12,4 +12,6 @@
   <string name="action_send">שלח</string>
   <string name="action_generate">צור</string>
   <string name="action_save">שמור</string>
+    <string name="program_string">התוכנית שתיצור תוצג כאן.</string>
+  <string name="proposed_program">מסלול מוצע</string>
 </resources>

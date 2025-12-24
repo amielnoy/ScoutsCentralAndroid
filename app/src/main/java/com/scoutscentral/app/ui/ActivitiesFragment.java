@@ -86,19 +86,37 @@ public class ActivitiesFragment extends Fragment implements ActivityCardAdapter.
       return;
     }
 
-    String[] names = new String[scouts.size()];
-    boolean[] checked = new boolean[scouts.size()];
-    for (int i = 0; i < scouts.size(); i++) {
-      names[i] = scouts.get(i).getName();
-      checked[i] = false;
-    }
+    Snackbar loading = Snackbar.make(requireView(), "טוען נוכחות...", Snackbar.LENGTH_INDEFINITE);
+    loading.show();
 
-    new AlertDialog.Builder(getContext())
-      .setTitle("נוכחות עבור " + activity.getTitle())
-      .setMultiChoiceItems(names, checked, (dialog, which, isChecked) -> checked[which] = isChecked)
-      .setPositiveButton("שמור נוכחות", (dialog, which) ->
-        Snackbar.make(requireView(), "נוכחות נשמרה", Snackbar.LENGTH_SHORT).show())
-      .setNegativeButton("ביטול", null)
-      .show();
+    new Thread(() -> {
+      List<String> presentIds = repository.fetchAttendanceForActivity(activity.getId());
+      String[] names = new String[scouts.size()];
+      boolean[] checked = new boolean[scouts.size()];
+      for (int i = 0; i < scouts.size(); i++) {
+        Scout scout = scouts.get(i);
+        names[i] = scout.getName();
+        checked[i] = presentIds.contains(scout.getId());
+      }
+
+      requireActivity().runOnUiThread(() -> {
+        loading.dismiss();
+        new AlertDialog.Builder(getContext())
+          .setTitle("נוכחות עבור " + activity.getTitle())
+          .setMultiChoiceItems(names, checked, (dialog, which, isChecked) -> checked[which] = isChecked)
+          .setPositiveButton("שמור נוכחות", (dialog, which) -> {
+            List<String> updatedIds = new ArrayList<>();
+            for (int i = 0; i < scouts.size(); i++) {
+              if (checked[i]) {
+                updatedIds.add(scouts.get(i).getId());
+              }
+            }
+            repository.saveAttendance(activity.getId(), updatedIds);
+            Snackbar.make(requireView(), "נוכחות נשמרה", Snackbar.LENGTH_SHORT).show();
+          })
+          .setNegativeButton("ביטול", null)
+          .show();
+      });
+    }).start();
   }
 }

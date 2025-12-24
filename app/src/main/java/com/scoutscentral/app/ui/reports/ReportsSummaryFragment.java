@@ -15,16 +15,22 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.scoutscentral.app.R;
 import com.scoutscentral.app.data.Scout;
 import com.scoutscentral.app.ui.ReportsViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 public class ReportsSummaryFragment extends Fragment {
   private ReportsViewModel viewModel;
   private final List<Scout> scouts = new ArrayList<>();
+  private final DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
 
   @Nullable
   @Override
@@ -52,6 +58,9 @@ public class ReportsSummaryFragment extends Fragment {
       spinner.setAdapter(adapter);
     });
 
+    start.setOnClickListener(v -> showDatePicker(start));
+    end.setOnClickListener(v -> showDatePicker(end));
+
     generate.setOnClickListener(v -> {
       int index = spinner.getSelectedItemPosition();
       if (index < 0 || index >= scouts.size()) {
@@ -66,6 +75,20 @@ public class ReportsSummaryFragment extends Fragment {
     });
 
     viewModel.getSummary().observe(getViewLifecycleOwner(), result::setText);
+  }
+
+  private void showDatePicker(EditText target) {
+    MaterialDatePicker<Long> picker = MaterialDatePicker.Builder.datePicker()
+      .setTitleText("בחר/י תאריך")
+      .build();
+    picker.addOnPositiveButtonClickListener(selection -> {
+      if (selection == null) {
+        return;
+      }
+      LocalDate date = Instant.ofEpochMilli(selection).atZone(ZoneOffset.UTC).toLocalDate();
+      target.setText(dateFormatter.format(date));
+    });
+    picker.show(getParentFragmentManager(), "report-date");
   }
 
   private List<String> getScoutNames() {

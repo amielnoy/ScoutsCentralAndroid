@@ -8,7 +8,6 @@ import com.scoutscentral.app.data.AttendanceRecord;
 import com.scoutscentral.app.data.DataRepository;
 import com.scoutscentral.app.data.Scout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ReportsViewModel extends ViewModel {
@@ -30,13 +29,7 @@ public class ReportsViewModel extends ViewModel {
     summary.setValue(result);
   }
 
-  public List<AttendanceRecord> getAttendanceData() {
-    List<AttendanceRecord> records = new ArrayList<>();
-    records.add(new AttendanceRecord("קשירה", 38));
-    records.add(new AttendanceRecord("בישול", 42));
-    records.add(new AttendanceRecord("טיול", 35));
-    records.add(new AttendanceRecord("ביקור", 40));
-    records.add(new AttendanceRecord("סדנה", 32));
-    return records;
+  public LiveData<List<AttendanceRecord>> getAttendanceRecords() {
+    return repository.getAttendanceRecords();
   }
 }

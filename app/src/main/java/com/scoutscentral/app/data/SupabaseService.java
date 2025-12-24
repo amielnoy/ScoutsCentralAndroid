@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -164,6 +165,133 @@ public class SupabaseService {
     postJson("/announcements?on_conflict=id", toAnnouncementJson(announcement), true);
   }
 
+  public void saveAttendance(String activityId, List<String> presentScoutIds) throws IOException {
+    Request deleteRequest = requestBuilder("/activity_attendance?activity_id=eq." + activityId)
+      .delete()
+      .build();
+    executeRequest(deleteRequest);
+
+    if (presentScoutIds == null || presentScoutIds.isEmpty()) {
+      return;
+    }
+    JsonArray payload = new JsonArray();
+    for (String scoutId : presentScoutIds) {
+      JsonObject row = new JsonObject();
+      row.addProperty("activity_id", activityId);
+      row.addProperty("scout_id", scoutId);
+      row.addProperty("present", true);
+      payload.add(row);
+    }
+    postJson("/activity_attendance?on_conflict=activity_id,scout_id", payload, true);
+  }
+
+  public List<AttendanceRecord> fetchAttendanceRecords() throws IOException {
+    JsonArray activitiesJson = getJsonArray("/activities?select=id,title,date");
+    JsonArray attendanceJson = getJsonArray("/activity_attendance?select=activity_id,scout_id");
+
+    List<ActivityMeta> activities = new ArrayList<>();
+    for (JsonElement element : activitiesJson) {
+      JsonObject row = element.getAsJsonObject();
+      String id = getString(row, "id");
+      String title = getString(row, "title");
+      String dateRaw = getString(row, "date");
+      Instant date = null;
+      if (dateRaw != null && !dateRaw.isEmpty()) {
+        try {
+          date = Instant.parse(dateRaw);
+        } catch (Exception ignored) {
+          date = null;
+        }
+      }
+      if (id != null) {
+        activities.add(new ActivityMeta(id, title != null ? title : id, date));
+      }
+    }
+
+    Map<String, Integer> counts = new HashMap<>();
+    for (JsonElement element : attendanceJson) {
+      JsonObject row = element.getAsJsonObject();
+      String activityId = getString(row, "activity_id");
+      if (activityId == null) {
+        continue;
+      }
+      counts.put(activityId, counts.getOrDefault(activityId, 0) + 1);
+    }
+
+    activities.sort((a, b) -> {
+      if (a.date == null && b.date == null) {
+        return 0;
+      }
+      if (a.date == null) {
+        return 1;
+      }
+      if (b.date == null) {
+        return -1;
+      }
+      return b.date.compareTo(a.date);
+    });
+
+    List<AttendanceRecord> records = new ArrayList<>();
+    int limit = Math.min(5, activities.size());
+    for (int i = 0; i < limit; i++) {
+      ActivityMeta meta = activities.get(i);
+      int count = counts.getOrDefault(meta.id, 0);
+      records.add(new AttendanceRecord(meta.title, count));
+    }
+    return records;
+  }
+
+  private static class ActivityMeta {
+    final String id;
+    final String title;
+    final Instant date;
+
+    ActivityMeta(String id, String title, Instant date) {
+      this.id = id;
+      this.title = title;
+      this.date = date;
+    }
+  }
+
+  public List<String> fetchAttendanceForActivity(String activityId) throws IOException {
+    String path = "/activity_attendance?select=scout_id&activity_id=eq." + activityId + "&present=eq.true";
+    JsonArray attendanceJson = getJsonArray(path);
+    List<String> presentIds = new ArrayList<>();
+    for (JsonElement element : attendanceJson) {
+      JsonObject row = element.getAsJsonObject();
+      String scoutId = getString(row, "scout_id");
+      if (scoutId != null) {
+        presentIds.add(scoutId);
+      }
+    }
+    return presentIds;
+  }
+
+  public String generateProgressPlan(Scout scout, String interests, String skills) throws IOException {
+    if (!isConfigured()) {
+      throw new IOException("Supabase not configured");
+    }
+    JsonObject payload = new JsonObject();
+    payload.addProperty("scout_id", scout.getId());
+    payload.addProperty("scout_name", scout.getName());
+    payload.addProperty("level", scout.getLevel() != null ? scout.getLevel().name() : "");
+    payload.addProperty("interests", interests);
+    payload.addProperty("skills", skills);
+    RequestBody requestBody = RequestBody.create(gson.toJson(payload), JSON);
+    Request request = functionRequestBuilder("/progress-plan")
+      .post(requestBody)
+      .build();
+    try (Response response = client.newCall(request).execute()) {
+      if (!response.isSuccessful()) {
+        throw new IOException("Supabase function failed: " + response.code());
+      }
+      String body = response.body() != null ? response.body().string() : "{}";
+      JsonObject json = JsonParser.parseString(body).getAsJsonObject();
+      String plan = getString(json, "plan");
+      return plan != null ? plan : "";
+    }
+  }
+
   private JsonArray getJsonArray(String path) throws IOException {
     Request request = requestBuilder(path).get().build();
     try (Response response = client.newCall(request).execute()) {
@@ -188,6 +316,14 @@ public class SupabaseService {
   private Request.Builder requestBuilder(String path) {
     return new Request.Builder()
       .url(restUrl + "/rest/v1" + path)
+      .addHeader("apikey", apiKey)
+      .addHeader("Authorization", "Bearer " + apiKey)
+      .addHeader("Content-Type", "application/json");
+  }
+
+  private Request.Builder functionRequestBuilder(String path) {
+    return new Request.Builder()
+      .url(restUrl + "/functions/v1" + path)
       .addHeader("apikey", apiKey)
       .addHeader("Authorization", "Bearer " + apiKey)
       .addHeader("Content-Type", "application/json");

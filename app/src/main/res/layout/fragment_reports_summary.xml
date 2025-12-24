@@ -36,15 +36,23 @@
       android:id="@+id/report_start_date"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:hint="תאריך התחלה (YYYY-MM-DD)"
-      android:layout_marginTop="12dp" />
+      android:hint="בחר/י תאריך התחלה"
+      android:layout_marginTop="12dp"
+      android:inputType="none"
+      android:focusable="false"
+      android:clickable="true"
+      android:cursorVisible="false" />
 
     <EditText
       android:id="@+id/report_end_date"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:hint="תאריך סיום (YYYY-MM-DD)"
-      android:layout_marginTop="8dp" />
+      android:hint="בחר/י תאריך סיום"
+      android:layout_marginTop="8dp"
+      android:inputType="none"
+      android:focusable="false"
+      android:clickable="true"
+      android:cursorVisible="false" />
 
     <com.google.android.material.button.MaterialButton
       android:id="@+id/report_generate"
