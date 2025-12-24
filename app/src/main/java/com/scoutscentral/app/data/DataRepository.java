@@ -156,6 +156,13 @@ public class DataRepository {
     });
   }
 
+  public void clearLocalData() {
+    scouts.setValue(new ArrayList<>());
+    activities.setValue(new ArrayList<>());
+    announcements.setValue(new ArrayList<>());
+    attendanceRecords.setValue(new ArrayList<>());
+  }
+
   public List<String> fetchAttendanceForActivity(String activityId) {
     if (!supabaseService.isConfigured()) {
       return new ArrayList<>();

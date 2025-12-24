@@ -1,0 +1,57 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:layoutDirection="rtl">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="הגדרות"
+      android:textStyle="bold"
+      android:textSize="22sp"
+      android:textColor="@color/text_primary" />
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="נהל סנכרון ונתונים מקומיים."
+      android:textColor="@color/text_secondary"
+      android:layout_marginTop="4dp" />
+
+    <com.google.android.material.card.MaterialCardView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      app:cardCornerRadius="12dp">
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <com.google.android.material.button.MaterialButton
+          android:id="@+id/settings_sync_now"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="סנכרון כעת"
+          style="@style/Widget.MaterialComponents.Button" />
+
+        <com.google.android.material.button.MaterialButton
+          android:id="@+id/settings_clear_local"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="איפוס נתונים מקומיים"
+          android:layout_marginTop="12dp"
+          style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+      </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+  </LinearLayout>
+</ScrollView>

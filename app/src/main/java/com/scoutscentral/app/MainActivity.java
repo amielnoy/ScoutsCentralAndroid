@@ -18,6 +18,7 @@ import com.scoutscentral.app.ui.DashboardFragment;
 import com.scoutscentral.app.ui.MembersFragment;
 import com.scoutscentral.app.ui.ProgressFragment;
 import com.scoutscentral.app.ui.ReportsFragment;
+import com.scoutscentral.app.ui.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
   private DrawerLayout drawerLayout;
@@ -72,6 +73,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     } else if (id == R.id.nav_reports) {
       fragment = new ReportsFragment();
       title = getString(R.string.nav_reports);
+    } else if (id == R.id.nav_settings) {
+      fragment = new SettingsFragment();
+      title = getString(R.string.nav_settings);
+    } else if (id == R.id.nav_logout) {
+      new androidx.appcompat.app.AlertDialog.Builder(this)
+        .setTitle("התנתקות")
+        .setMessage("לצאת מהאפליקציה?")
+        .setPositiveButton("התנתק", (dialog, which) -> finish())
+        .setNegativeButton("ביטול", null)
+        .show();
+      drawerLayout.closeDrawer(GravityCompat.START);
+      return true;
     } else {
       drawerLayout.closeDrawer(GravityCompat.START);
       return true;
