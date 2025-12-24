@@ -1,0 +1,98 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:fillViewport="true"
+  android:layoutDirection="rtl">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="כלי תקשורת"
+      android:textStyle="bold"
+      android:textSize="22sp"
+      android:textColor="@color/text_primary" />
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="שלח הודעות ותזכורות לחניכים ולהורים."
+      android:textColor="@color/text_secondary"
+      android:layout_marginTop="4dp" />
+
+    <com.google.android.material.card.MaterialCardView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      app:cardCornerRadius="12dp">
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="צור הודעה"
+          android:textStyle="bold"
+          android:textColor="@color/text_primary" />
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="כתוב הודעה חדשה לשליחה לשבט."
+          android:textColor="@color/text_secondary"
+          android:textSize="12sp"
+          android:layout_marginTop="4dp" />
+
+        <EditText
+          android:id="@+id/announcement_title"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:hint="כותרת"
+          android:layout_marginTop="12dp" />
+
+        <EditText
+          android:id="@+id/announcement_message"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:hint="כתוב את הודעתך כאן..."
+          android:minLines="4"
+          android:inputType="textMultiLine"
+          android:layout_marginTop="12dp" />
+
+        <com.google.android.material.button.MaterialButton
+          android:id="@+id/send_announcement"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="שלח הודעה"
+          android:layout_marginTop="12dp"
+          style="@style/Widget.MaterialComponents.Button" />
+      </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="הודעות שנשלחו"
+      android:textStyle="bold"
+      android:textSize="18sp"
+      android:textColor="@color/text_primary"
+      android:layout_marginTop="24dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/sent_list"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:nestedScrollingEnabled="false"
+      android:layout_marginTop="8dp" />
+  </LinearLayout>
+</ScrollView>

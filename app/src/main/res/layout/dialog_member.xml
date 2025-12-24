@@ -1,0 +1,44 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical"
+  android:padding="16dp"
+  android:layoutDirection="rtl">
+
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="שם"
+    android:textColor="@color/text_secondary" />
+
+  <EditText
+    android:id="@+id/member_name_input"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:inputType="textPersonName" />
+
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="שכבה"
+    android:textColor="@color/text_secondary"
+    android:layout_marginTop="12dp" />
+
+  <Spinner
+    android:id="@+id/member_level_input"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="איש קשר"
+    android:textColor="@color/text_secondary"
+    android:layout_marginTop="12dp" />
+
+  <EditText
+    android:id="@+id/member_contact_input"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:inputType="textEmailAddress" />
+</LinearLayout>

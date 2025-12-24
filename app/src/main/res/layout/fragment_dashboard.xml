@@ -1,0 +1,75 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:fillViewport="true"
+  android:layoutDirection="rtl">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="לוח מחוונים"
+      android:textSize="24sp"
+      android:textStyle="bold"
+      android:textColor="@color/text_primary" />
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="ברוכים השבים! הנה סיכום מצב השבט שלכם."
+      android:textColor="@color/text_secondary"
+      android:layout_marginTop="4dp" />
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/sync_now_button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="12dp"
+      android:text="סנכרון כעת" />
+
+    <androidx.gridlayout.widget.GridLayout
+      android:id="@+id/dashboard_stats"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      android:columnCount="2"
+      android:rowCount="2"
+      android:useDefaultMargins="true" />
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="פעילויות קרובות"
+      android:textStyle="bold"
+      android:textSize="18sp"
+      android:textColor="@color/text_primary"
+      android:layout_marginTop="24dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/upcoming_list"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:nestedScrollingEnabled="false" />
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="הודעות אחרונות"
+      android:textStyle="bold"
+      android:textSize="18sp"
+      android:textColor="@color/text_primary"
+      android:layout_marginTop="24dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/announcement_list"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:nestedScrollingEnabled="false" />
+  </LinearLayout>
+</ScrollView>

@@ -1,0 +1,15 @@
+<resources>
+  <string name="app_name">צופים סנטרל</string>
+  <string name="nav_dashboard">לוח מחוונים</string>
+  <string name="nav_members">חברים</string>
+  <string name="nav_activities">פעילויות</string>
+  <string name="nav_progress">התקדמות</string>
+  <string name="nav_communication">תקשורת</string>
+  <string name="nav_reports">דוחות</string>
+  <string name="nav_settings">הגדרות</string>
+  <string name="nav_logout">התנתקות</string>
+  <string name="action_add">הוסף</string>
+  <string name="action_send">שלח</string>
+  <string name="action_generate">צור</string>
+  <string name="action_save">שמור</string>
+</resources>
