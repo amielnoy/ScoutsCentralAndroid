@@ -14,4 +14,5 @@
   <string name="action_save">שמור</string>
     <string name="program_string">התוכנית שתיצור תוצג כאן.</string>
   <string name="proposed_program">מסלול מוצע</string>
+    <string name="login">כניסה</string>
 </resources>
