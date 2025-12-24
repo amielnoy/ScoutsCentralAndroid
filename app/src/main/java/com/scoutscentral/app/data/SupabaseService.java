@@ -267,6 +267,32 @@ public class SupabaseService {
     return presentIds;
   }
 
+  public Instructor authenticateInstructor(String email, String password) throws IOException {
+    String path = "/instructors?select=id,name,email,password&email=eq." + email;
+    JsonArray instructors = getJsonArray(path);
+    if (instructors.size() == 0) {
+      return null;
+    }
+    JsonObject row = instructors.get(0).getAsJsonObject();
+    String stored = getString(row, "password");
+    if (stored == null || !stored.equals(password)) {
+      return null;
+    }
+    String id = getString(row, "id");
+    String name = getString(row, "name");
+    return new Instructor(id != null ? id : "", name != null ? name : email);
+  }
+
+  public static class Instructor {
+    public final String id;
+    public final String name;
+
+    public Instructor(String id, String name) {
+      this.id = id;
+      this.name = name;
+    }
+  }
+
   public String generateProgressPlan(Scout scout, String interests, String skills) throws IOException {
     if (!isConfigured()) {
       throw new IOException("Supabase not configured");

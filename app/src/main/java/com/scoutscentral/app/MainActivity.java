@@ -19,6 +19,7 @@ import com.scoutscentral.app.ui.MembersFragment;
 import com.scoutscentral.app.ui.ProgressFragment;
 import com.scoutscentral.app.ui.ReportsFragment;
 import com.scoutscentral.app.ui.SettingsFragment;
+import com.scoutscentral.app.auth.AuthStore;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
   private DrawerLayout drawerLayout;
@@ -28,6 +29,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    if (!AuthStore.isLoggedIn(this)) {
+      startActivity(new android.content.Intent(this, LoginActivity.class));
+      finish();
+      return;
+    }
     setContentView(R.layout.activity_main);
 
     drawerLayout = findViewById(R.id.drawer_layout);
@@ -80,7 +86,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       new androidx.appcompat.app.AlertDialog.Builder(this)
         .setTitle("התנתקות")
         .setMessage("לצאת מהאפליקציה?")
-        .setPositiveButton("התנתק", (dialog, which) -> finish())
+        .setPositiveButton("התנתק", (dialog, which) -> {
+          AuthStore.clear(this);
+          startActivity(new android.content.Intent(this, LoginActivity.class));
+          finish();
+        })
         .setNegativeButton("ביטול", null)
         .show();
       drawerLayout.closeDrawer(GravityCompat.START);
