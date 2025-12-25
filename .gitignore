@@ -1,5 +1,11 @@
 # Project exclude paths
-/.gradle/
-/app/build/
-/app/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/
-/build/reports/problems/
+# Standard Android ignores
+.gradle/
+build/
+app/build/
+captures/
+*.iml
+.externalNativeBuild
+.cxx
+local.properties
+.DS_Store
