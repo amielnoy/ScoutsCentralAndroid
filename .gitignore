@@ -9,3 +9,9 @@ captures/
 .cxx
 local.properties
 .DS_Store
+
+# Android Studio local state
+.idea/deploymentTargetSelector.xml
+.idea/assetWizardSettings.xml
+.idea/modules.xml
+.idea/workspace.xml
