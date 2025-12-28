@@ -2,8 +2,10 @@ package com.scoutscentral.app.auth;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 public class AuthStore {
+  private static final String TAG = "AuthStore";
   private static final String PREFS = "scouts_auth";
   private static final String KEY_INSTRUCTOR_ID = "instructor_id";
   private static final String KEY_INSTRUCTOR_NAME = "instructor_name";
@@ -11,18 +13,22 @@ public class AuthStore {
   private AuthStore() {}
 
   public static boolean isLoggedIn(Context context) {
-    return getPrefs(context).contains(KEY_INSTRUCTOR_ID);
+    boolean loggedIn = getPrefs(context).contains(KEY_INSTRUCTOR_ID);
+    Log.d(TAG, "isLoggedIn: " + loggedIn);
+    return loggedIn;
   }
 
   public static void saveInstructor(Context context, String id, String name) {
-    getPrefs(context).edit()
+    Log.d(TAG, "Saving instructor: " + name + " (ID: " + id + ")");
+    boolean success = getPrefs(context).edit()
       .putString(KEY_INSTRUCTOR_ID, id)
       .putString(KEY_INSTRUCTOR_NAME, name)
-      .apply();
+      .commit(); // Use commit for immediate write
+    Log.d(TAG, "Save success: " + success);
   }
 
   public static void clear(Context context) {
-    getPrefs(context).edit().clear().apply();
+    getPrefs(context).edit().clear().commit();
   }
 
   public static String getInstructorName(Context context) {
