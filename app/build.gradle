@@ -20,8 +20,10 @@ android {
     versionCode 1
     versionName "1.0"
 
-    def supabaseUrl = localProps.getProperty("SUPABASE_URL", "")
-    def supabaseAnonKey = localProps.getProperty("SUPABASE_ANON_KEY", "")
+    // Portable config: Read from local.properties OR Environment Variables
+    def supabaseUrl = localProps.getProperty("SUPABASE_URL") ?: System.getenv("SUPABASE_URL") ?: ""
+    def supabaseAnonKey = localProps.getProperty("SUPABASE_ANON_KEY") ?: System.getenv("SUPABASE_ANON_KEY") ?: ""
+    
     buildConfigField "String", "SUPABASE_URL", "\"${supabaseUrl}\""
     buildConfigField "String", "SUPABASE_ANON_KEY", "\"${supabaseAnonKey}\""
   }
