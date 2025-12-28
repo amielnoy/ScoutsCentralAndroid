@@ -10,8 +10,8 @@ captures/
 local.properties
 .DS_Store
 
-# Android Studio local state
-.idea/deploymentTargetSelector.xml
-.idea/assetWizardSettings.xml
-.idea/modules.xml
-.idea/workspace.xml
+# Android Studio / IntelliJ IDEA
+.idea/
+*.iws
+*.out
+*.app
