@@ -17,8 +17,16 @@ import java.util.List;
 
 public class ReportsViewModel extends ViewModel {
   private static final String TAG = "ReportsViewModel";
-  private final DataRepository repository = DataRepository.getInstance();
+  private final DataRepository repository;
   private final MutableLiveData<String> summary = new MutableLiveData<>();
+
+  public ReportsViewModel() {
+    this(DataRepository.getInstance());
+  }
+
+  public ReportsViewModel(DataRepository repository) {
+    this.repository = repository;
+  }
 
   public LiveData<List<Scout>> getScouts() {
     return repository.getScouts();
