@@ -24,8 +24,7 @@ import com.scoutscentral.app.auth.AuthStore;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
   private DrawerLayout drawerLayout;
-  private NavigationView navigationView;
-  private MaterialToolbar toolbar;
+    private MaterialToolbar toolbar;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     setContentView(R.layout.activity_main);
 
     drawerLayout = findViewById(R.id.drawer_layout);
-    navigationView = findViewById(R.id.navigation_view);
+      NavigationView navigationView = findViewById(R.id.navigation_view);
     toolbar = findViewById(R.id.top_app_bar);
 
     setSupportActionBar(toolbar);
