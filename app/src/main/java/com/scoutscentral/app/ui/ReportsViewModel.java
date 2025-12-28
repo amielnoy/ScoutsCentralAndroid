@@ -1,9 +1,14 @@
 package com.scoutscentral.app.ui;
 
+import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.scoutscentral.app.data.AttendanceRecord;
 import com.scoutscentral.app.data.DataRepository;
 import com.scoutscentral.app.data.Scout;
@@ -11,6 +16,7 @@ import com.scoutscentral.app.data.Scout;
 import java.util.List;
 
 public class ReportsViewModel extends ViewModel {
+  private static final String TAG = "ReportsViewModel";
   private final DataRepository repository = DataRepository.getInstance();
   private final MutableLiveData<String> summary = new MutableLiveData<>();
 
@@ -23,10 +29,37 @@ public class ReportsViewModel extends ViewModel {
   }
 
   public void generateSummary(Scout scout, String from, String to) {
-    String result = "סיכום השתתפות עבור " + scout.getName() + "\n" +
-      "טווח: " + from + " - " + to + "\n" +
-      "החניך השתתף בפעילויות מפתח והראה עקביות מרשימה.";
-    summary.setValue(result);
+    summary.setValue("מייצר סיכום...");
+    new Thread(() -> {
+      try {
+        String historyJson = repository.fetchScoutActivityHistory(scout.getId(), from, to);
+        JsonArray array = JsonParser.parseString(historyJson).getAsJsonArray();
+        
+        StringBuilder activityList = new StringBuilder();
+        int count = 0;
+        for (JsonElement element : array) {
+            JsonObject obj = element.getAsJsonObject();
+            if (obj.has("activities")) {
+                JsonObject act = obj.getAsJsonObject("activities");
+                String title = act.get("title").getAsString();
+                String date = act.get("date").getAsString();
+                activityList.append("• ").append(title).append(" (").append(date.split("T")[0]).append(")\n");
+                count++;
+            }
+        }
+
+        String result = "סיכום השתתפות עבור " + scout.getName() + "\n" +
+          "טווח: " + from + " - " + to + "\n" +
+          "סך הכל פעילויות: " + count + "\n\n" +
+          "רשימת פעילויות:\n" + 
+          (activityList.length() > 0 ? activityList.toString() : "לא נמצאו פעילויות בטווח זה.");
+          
+        summary.postValue(result);
+      } catch (Exception e) {
+        Log.e(TAG, "Error generating report summary", e);
+        summary.postValue("שגיאה ביצירת הסיכום.");
+      }
+    }).start();
   }
 
   public LiveData<List<AttendanceRecord>> getAttendanceRecords() {

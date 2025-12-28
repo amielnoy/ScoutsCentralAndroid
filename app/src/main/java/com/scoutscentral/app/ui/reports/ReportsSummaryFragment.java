@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.snackbar.Snackbar;
 import com.scoutscentral.app.R;
 import com.scoutscentral.app.data.Scout;
 import com.scoutscentral.app.ui.ReportsViewModel;
@@ -30,7 +31,7 @@ import java.time.format.DateTimeFormatter;
 public class ReportsSummaryFragment extends Fragment {
   private ReportsViewModel viewModel;
   private final List<Scout> scouts = new ArrayList<>();
-  private final DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
+  private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
   @Nullable
   @Override
@@ -58,37 +59,61 @@ public class ReportsSummaryFragment extends Fragment {
       spinner.setAdapter(adapter);
     });
 
-    start.setOnClickListener(v -> showDatePicker(start));
-    end.setOnClickListener(v -> showDatePicker(end));
+    start.setOnClickListener(v -> showDatePicker(start, "בחר/י תאריך התחלה"));
+    end.setOnClickListener(v -> showDatePicker(end, "בחר/י תאריך סיום"));
 
     generate.setOnClickListener(v -> {
       int index = spinner.getSelectedItemPosition();
       if (index < 0 || index >= scouts.size()) {
+        Snackbar.make(v, "אנא בחר/י חניך", Snackbar.LENGTH_SHORT).show();
         return;
       }
-      String from = start.getText().toString().trim();
-      String to = end.getText().toString().trim();
-      if (from.isEmpty() || to.isEmpty()) {
+      String fromStr = start.getText().toString().trim();
+      String toStr = end.getText().toString().trim();
+      
+      if (fromStr.isEmpty() || toStr.isEmpty()) {
+        Snackbar.make(v, "אנא בחר/י טווח תאריכים", Snackbar.LENGTH_SHORT).show();
         return;
       }
-      viewModel.generateSummary(scouts.get(index), from, to);
+
+      try {
+        LocalDate fromDate = LocalDate.parse(fromStr, dateFormatter);
+        LocalDate toDate = LocalDate.parse(toStr, dateFormatter);
+        if (toDate.isBefore(fromDate)) {
+          Snackbar.make(v, "תאריך סיום לא יכול להיות לפני תאריך התחלה", Snackbar.LENGTH_SHORT).show();
+          return;
+        }
+        viewModel.generateSummary(scouts.get(index), fromStr, toStr);
+      } catch (Exception e) {
+        Snackbar.make(v, "פורמט תאריך לא תקין", Snackbar.LENGTH_SHORT).show();
+      }
     });
 
     viewModel.getSummary().observe(getViewLifecycleOwner(), result::setText);
   }
 
-  private void showDatePicker(EditText target) {
+  private void showDatePicker(EditText target, String title) {
+    long initialSelection = MaterialDatePicker.todayInUtcMilliseconds();
+    String currentText = target.getText().toString();
+    if (!currentText.isEmpty()) {
+      try {
+        LocalDate current = LocalDate.parse(currentText, dateFormatter);
+        initialSelection = current.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli();
+      } catch (Exception ignored) {}
+    }
+
     MaterialDatePicker<Long> picker = MaterialDatePicker.Builder.datePicker()
-      .setTitleText("בחר/י תאריך")
+      .setTitleText(title)
+      .setSelection(initialSelection)
       .build();
+
     picker.addOnPositiveButtonClickListener(selection -> {
-      if (selection == null) {
-        return;
+      if (selection != null) {
+        LocalDate date = Instant.ofEpochMilli(selection).atZone(ZoneOffset.UTC).toLocalDate();
+        target.setText(dateFormatter.format(date));
       }
-      LocalDate date = Instant.ofEpochMilli(selection).atZone(ZoneOffset.UTC).toLocalDate();
-      target.setText(dateFormatter.format(date));
     });
-    picker.show(getParentFragmentManager(), "report-date");
+    picker.show(getChildFragmentManager(), "report-date");
   }
 
   private List<String> getScoutNames() {
