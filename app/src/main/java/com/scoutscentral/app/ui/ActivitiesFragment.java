@@ -1,6 +1,8 @@
 package com.scoutscentral.app.ui;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,8 +23,11 @@ import com.scoutscentral.app.data.DataRepository;
 import com.scoutscentral.app.data.Scout;
 import com.scoutscentral.app.ui.adapter.ActivityCardAdapter;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class ActivitiesFragment extends Fragment implements ActivityCardAdapter.ActivityActionListener {
   private ActivitiesViewModel viewModel;
@@ -55,16 +60,35 @@ public class ActivitiesFragment extends Fragment implements ActivityCardAdapter.
   private void showAddDialog() {
     View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_activity, null, false);
     EditText title = dialogView.findViewById(R.id.activity_title_input);
-    EditText date = dialogView.findViewById(R.id.activity_date_input);
+    EditText dateInput = dialogView.findViewById(R.id.activity_date_input);
     EditText location = dialogView.findViewById(R.id.activity_location_input);
     EditText description = dialogView.findViewById(R.id.activity_description_input);
+
+    Calendar calendar = Calendar.getInstance();
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+
+    dateInput.setFocusable(false);
+    dateInput.setOnClickListener(v -> {
+      new DatePickerDialog(getContext(), (view, year, month, dayOfMonth) -> {
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+        new TimePickerDialog(getContext(), (timeView, hourOfDay, minute) -> {
+          calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+          calendar.set(Calendar.MINUTE, minute);
+          dateInput.setText(sdf.format(calendar.getTime()));
+        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
+
+      }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+    });
 
     new AlertDialog.Builder(getContext())
       .setTitle("הוסף פעילות חדשה")
       .setView(dialogView)
       .setPositiveButton("צור", (dialog, which) -> {
         String titleText = title.getText().toString().trim();
-        String dateText = date.getText().toString().trim();
+        String dateText = dateInput.getText().toString().trim();
         String locationText = location.getText().toString().trim();
         String descriptionText = description.getText().toString().trim();
 

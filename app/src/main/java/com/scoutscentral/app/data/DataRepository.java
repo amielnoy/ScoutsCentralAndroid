@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import android.util.Log;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,7 +40,7 @@ public class DataRepository {
     scoutList.add(new Scout("1", "ליאם גרין", "", ScoutLevel.KEFIR,
       "liam.parent@example.com", "טיולים, מחנאות וגילוף בעץ",
       "קשירת קשרים, עזרה ראשונה בסיסית", Arrays.asList("act-1", "act-3")));
-    scoutList.add(new Scout("2", "אוליביה ميدو", "", ScoutLevel.OFER,
+    scoutList.add(new Scout("2", "אוליביה ميدו", "", ScoutLevel.OFER,
       "olivia.parent@example.com", "אפייה, אומנות ויצירה, שירות קהילתי",
       "מכירת עוגיות, הכנת צמידי חברות", Collections.singletonList("act-4")));
     scoutList.add(new Scout("3", "נוח ריבר", "", ScoutLevel.KEFIR,
@@ -56,16 +57,16 @@ public class DataRepository {
     List<Activity> activityList = new ArrayList<>();
     activityList.add(new Activity("act-1", "סדנת קשירת קשרים", "2024-07-15T10:00:00Z",
       "מתנ\"ס קהילתי", Arrays.asList("חבל (מטר 1 לכל חניך)", "חוברת הדרכה"),
-      "למדו קשרים חיוניים למחנאות והישרדות.", ""));
+      "למדו קשרים חיוניים למחנאות והישרדות.", getImageUrlForTitle("סדנת קשירת קשרים")));
     activityList.add(new Activity("act-2", "בישולי מדורה", "2024-07-20T18:00:00Z",
       "פארק עמק ירוק", Arrays.asList("נקניקיות", "לחמניות", "מרשמתלו", "שיפודים"),
-      "התאספו סביב המדורה לשירים ואוכל טעים.", ""));
+      "התאספו סביב המדורה לשירים ואוכל טעים.", getImageUrlForTitle("בישולי מדורה")));
     activityList.add(new Activity("act-3", "טיול שימור יערות", "2024-08-01T09:00:00Z",
       "שביל היער הלוחש", Arrays.asList("כפפות", "שקיות אשפה", "בקבוקי מים"),
-      "טיול המתמקד בלימוד על הצמחייה המקומית וניקוי השביל.", ""));
+      "טיול המתמקד בלימוד על הצמחייה המקומית וניקוי השביל.", getImageUrlForTitle("טיול שימור יערות")));
     activityList.add(new Activity("act-4", "ביקור במרכז גיל הזהב", "2024-08-10T14:00:00Z",
-      "מרכז גיל הזהב \"שדות مشمس\"", Arrays.asList("משחקי קופסה", "כרטיסי ברכה בעבודת יד"),
-      "בלו אחר הצהריים עם קשישים מקומיים, שתפו סיפורים ומשחקים.", ""));
+      "מרכז גיל הזהב \"שדות مشמש\"", Arrays.asList("משחקי קופסה", "כרטיסי ברכה בעבודת יד"),
+      "בלו אחר הצהריים עם קשישים מקומיים, שתפו סיפורים ומשחקים.", getImageUrlForTitle("ביקור במרכז גיל הזהב")));
     activities.setValue(activityList);
 
     List<Announcement> announcementList = new ArrayList<>();
@@ -76,6 +77,29 @@ public class DataRepository {
       "תודה ענקית לכל מי שהשתתף במכירת העוגות האחרונה שלנו. הצלחנו לעמוד ביעד גיוס התרומות לתמיכה במקלט לבעלי חיים המקומי!",
       "2024-06-20T16:30:00Z"));
     announcements.setValue(announcementList);
+  }
+
+  private String getImageUrlForTitle(String title) {
+    if (title == null || title.isEmpty()) {
+      return "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?q=80&w=800&auto=format&fit=crop";
+    }
+    String query = title.toLowerCase();
+    if (query.contains("קשרים") || query.contains("חבל")) {
+      return "https://images.unsplash.com/photo-1517164850305-99a3e65bb47e?q=80&w=800&auto=format&fit=crop";
+    } else if (query.contains("מדורה") || query.contains("בישול")) {
+      return "https://images.unsplash.com/photo-1473221326025-9183b464bb7e?q=80&w=800&auto=format&fit=crop";
+    } else if (query.contains("יער") || query.contains("טיול")) {
+      return "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=800&auto=format&fit=crop";
+    } else if (query.contains("גיל הזהב") || query.contains("קשישים")) {
+      return "https://images.unsplash.com/photo-1516627145497-ae6968895b74?q=80&w=800&auto=format&fit=crop";
+    } else if (query.contains("מחנה") || query.contains("קיץ")) {
+      return "https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?q=80&w=800&auto=format&fit=crop";
+    } else if (query.contains("ניקוי") || query.contains("סביבה")) {
+      return "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?q=80&w=800&auto=format&fit=crop";
+    } else if (query.contains("תרומות") || query.contains("קהילה")) {
+      return "https://images.unsplash.com/photo-1559027615-cd4428d63b5f?q=80&w=800&auto=format&fit=crop";
+    }
+    return "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?q=80&w=800&auto=format&fit=crop";
   }
 
   public LiveData<List<Scout>> getScouts() {
@@ -133,7 +157,8 @@ public class DataRepository {
   public void addActivity(String title, String date, String location, String description) {
     List<Activity> current = new ArrayList<>(activities.getValue());
     String id = "act-" + UUID.randomUUID().toString().substring(0, 8);
-    Activity newActivity = new Activity(id, title, date, location, new ArrayList<>(), description, "");
+    String imageUrl = getImageUrlForTitle(title);
+    Activity newActivity = new Activity(id, title, date, location, new ArrayList<>(), description, imageUrl);
     current.add(0, newActivity);
     activities.setValue(current);
     runSupabaseTask(() -> supabaseService.upsertActivity(newActivity));
@@ -164,9 +189,7 @@ public class DataRepository {
   }
 
   public List<String> fetchAttendanceForActivity(String activityId) {
-    if (!supabaseService.isConfigured()) {
-      return new ArrayList<>();
-    }
+    if (!supabaseService.isConfigured()) return new ArrayList<>();
     try {
       return supabaseService.fetchAttendanceForActivity(activityId);
     } catch (Exception ex) {
@@ -175,44 +198,33 @@ public class DataRepository {
     }
   }
 
+  public String fetchScoutActivityHistory(String scoutId, String from, String to) throws IOException {
+      return supabaseService.getScoutAttendanceHistory(scoutId, from, to);
+  }
+
   private String isoNow() {
     return java.time.Instant.now().toString();
   }
 
   private void syncWithSupabase(boolean notifyOnSuccess) {
-    if (!supabaseService.isConfigured()) {
-      return;
-    }
+    if (!supabaseService.isConfigured()) return;
     new Thread(() -> {
       try {
         List<Scout> remoteScouts = supabaseService.fetchScouts();
-        if (remoteScouts != null && !remoteScouts.isEmpty()) {
-          scouts.postValue(remoteScouts);
-        } else {
-          supabaseService.syncScouts(scouts.getValue());
-        }
+        if (remoteScouts != null && !remoteScouts.isEmpty()) scouts.postValue(remoteScouts);
+        else supabaseService.syncScouts(scouts.getValue());
 
         List<Activity> remoteActivities = supabaseService.fetchActivities();
-        if (remoteActivities != null && !remoteActivities.isEmpty()) {
-          activities.postValue(remoteActivities);
-        } else {
-          supabaseService.syncActivities(activities.getValue());
-        }
+        if (remoteActivities != null && !remoteActivities.isEmpty()) activities.postValue(remoteActivities);
+        else supabaseService.syncActivities(activities.getValue());
 
         List<Announcement> remoteAnnouncements = supabaseService.fetchAnnouncements();
-        if (remoteAnnouncements != null && !remoteAnnouncements.isEmpty()) {
-          announcements.postValue(remoteAnnouncements);
-        } else {
-          supabaseService.syncAnnouncements(announcements.getValue());
-        }
+        if (remoteAnnouncements != null && !remoteAnnouncements.isEmpty()) announcements.postValue(remoteAnnouncements);
+        else supabaseService.syncAnnouncements(announcements.getValue());
 
         List<AttendanceRecord> remoteAttendance = supabaseService.fetchAttendanceRecords();
-        if (remoteAttendance != null) {
-          attendanceRecords.postValue(remoteAttendance);
-        }
-        if (notifyOnSuccess) {
-          syncCompletedAt.postValue(System.currentTimeMillis());
-        }
+        if (remoteAttendance != null) attendanceRecords.postValue(remoteAttendance);
+        if (notifyOnSuccess) syncCompletedAt.postValue(System.currentTimeMillis());
       } catch (Exception ex) {
         Log.e("DataRepository", "Supabase sync failed", ex);
       }
@@ -220,19 +232,11 @@ public class DataRepository {
   }
 
   private void runSupabaseTask(SupabaseTask task) {
-    if (!supabaseService.isConfigured()) {
-      return;
-    }
+    if (!supabaseService.isConfigured()) return;
     new Thread(() -> {
-      try {
-        task.run();
-      } catch (Exception ex) {
-        Log.e("DataRepository", "Supabase update failed", ex);
-      }
+      try { task.run(); } catch (Exception ex) { Log.e("DataRepository", "Supabase update failed", ex); }
     }).start();
   }
 
-  private interface SupabaseTask {
-    void run() throws Exception;
-  }
+  private interface SupabaseTask { void run() throws Exception; }
 }
