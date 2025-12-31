@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
@@ -12,15 +13,21 @@ import com.google.android.material.snackbar.Snackbar;
 import com.scoutscentral.app.auth.AuthStore;
 import com.scoutscentral.app.data.SupabaseService;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 public class LoginActivity extends AppCompatActivity {
   private SupabaseService supabaseService;
+  private final Executor backgroundExecutor = Executors.newSingleThreadExecutor();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_login);
 
-    supabaseService = new SupabaseService();
+    if (supabaseService == null) {
+      supabaseService = new SupabaseService();
+    }
 
     EditText emailInput = findViewById(R.id.login_email);
     EditText passwordInput = findViewById(R.id.login_password);
@@ -37,12 +44,17 @@ public class LoginActivity extends AppCompatActivity {
     });
   }
 
+  @VisibleForTesting
+  public void setSupabaseService(SupabaseService service) {
+    this.supabaseService = service;
+  }
+
   private void attemptLogin(View view, String email, String password) {
     if (!supabaseService.isConfigured()) {
       Snackbar.make(view, "Supabase לא מוגדר", Snackbar.LENGTH_SHORT).show();
       return;
     }
-    new Thread(() -> {
+    backgroundExecutor.execute(() -> {
       try {
         SupabaseService.Instructor instructor = supabaseService.authenticateInstructor(email, password);
         if (instructor != null) {
@@ -56,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
         runOnUiThread(() ->
           Snackbar.make(view, "שגיאה בהתחברות", Snackbar.LENGTH_SHORT).show());
       }
-    }).start();
+    });
   }
 
   private void goToMain() {
