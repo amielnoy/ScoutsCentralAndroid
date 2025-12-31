@@ -44,7 +44,8 @@ jobs:
       - name: Build and Unit Test
         # Removed lint from the critical path to speed up the feedback loop.
         # assembleDebug is faster than running full quality checks.
-        run: ./gradlew testDebugUnitTest assembleDebug --no-daemon --parallel --build-cache
+        run: ./gradlew testDebugUnitTest assembleDebug --no-daemon --parallel --build-cache --configuration-cache
+
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
