@@ -20,12 +20,9 @@ android {
     versionCode 1
     versionName "1.0"
 
-    // Helper to get and clean properties/env vars
     def getSafeProperty = { name ->
         def val = localProps.getProperty(name) ?: System.getenv(name) ?: ""
-        // Strip quotes if they were added accidentally to the secret/property
         val = val.replace("\"", "")
-        // Escape backslashes for Java string generation
         return val.replace("\\", "\\\\")
     }
 
@@ -52,6 +49,12 @@ android {
     jvmTarget = '17'
   }
   buildToolsVersion '36.1.0'
+
+  testOptions {
+    unitTests {
+      includeAndroidResources = true
+    }
+  }
 }
 
 dependencies {
@@ -75,6 +78,10 @@ dependencies {
   testImplementation libs.junit
   testImplementation libs.mockito.core
   testImplementation libs.androidx.arch.core.testing
+  testImplementation 'org.robolectric:robolectric:4.12.1'
+  testImplementation 'androidx.test:core:1.6.1'
+  testImplementation 'androidx.test.ext:junit:1.2.1'
+  testImplementation 'androidx.test.espresso:espresso-core:3.6.1'
 
   androidTestImplementation 'androidx.test.ext:junit:1.2.1'
   androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
