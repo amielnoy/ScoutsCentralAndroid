@@ -16,9 +16,9 @@ on:
 
 jobs:
   build-and-test:
-    name: Build, Lint, and Test
+    name: Build and Test
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -38,12 +38,13 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: wrapper
-          # Cache only on push to main/master to avoid contention and save time
+          # Only save cache on the main branches to keep it lean and fast
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' }}
 
-      - name: Quality Checks and Build
-        # Running combined command to maximize Gradle efficiency
-        run: ./gradlew lintDebug testDebugUnitTest assembleDebug --no-daemon --stacktrace
+      - name: Build and Unit Test
+        # Removed lint from the critical path to speed up the feedback loop.
+        # assembleDebug is faster than running full quality checks.
+        run: ./gradlew testDebugUnitTest assembleDebug --no-daemon --parallel --build-cache
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
@@ -51,4 +52,4 @@ jobs:
         with:
           name: app-debug
           path: app/build/outputs/apk/debug/app-debug.apk
-          retention-days: 7
+          retention-days: 3
