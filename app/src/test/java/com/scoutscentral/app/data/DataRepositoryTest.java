@@ -1,4 +1,4 @@
-package com.scoutscentral.app.data;
+package com.scoutscentral.app.model.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

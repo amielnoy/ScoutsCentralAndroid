@@ -1,7 +1,6 @@
-package com.scoutscentral.app.data;
+package com.scoutscentral.app.model.data;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import com.scoutscentral.app.model.ScoutLevel;
 
@@ -21,8 +20,6 @@ public class SupabaseServiceTest {
 
     @Test
     public void testParseLevel_validInput() throws Exception {
-        // Use reflection to test private/package-private method if needed, 
-        // but here we just test that the logic works correctly.
         ScoutLevel level = invokeParseLevel("KEFIR");
         assertEquals(ScoutLevel.KEFIR, level);
         
@@ -46,7 +43,6 @@ public class SupabaseServiceTest {
         assertEquals("Jane Doe", instructor.name);
     }
 
-    // Helper to access the private parseLevel method for testing logic
     private ScoutLevel invokeParseLevel(String input) throws Exception {
         Method method = SupabaseService.class.getDeclaredMethod("parseLevel", String.class);
         method.setAccessible(true);

@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.Observer;
 
-import com.scoutscentral.app.data.DataRepository;
+import com.scoutscentral.app.model.data.DataRepository;
 import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.model.ScoutLevel;
 import com.scoutscentral.app.view_model.ReportsViewModel;
@@ -33,7 +33,6 @@ public class ReportsViewModelTest {
 
     @Before
     public void setUp() {
-        // Use manual initialization instead of Rule to avoid bytecode generation issues
         mockRepository = mock(DataRepository.class);
         viewModel = new ReportsViewModel(mockRepository);
     }
