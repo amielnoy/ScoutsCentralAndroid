@@ -1,6 +1,7 @@
-package com.scoutscentral.app.model.data;
+package com.scoutscentral.app.data;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -9,6 +10,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import com.scoutscentral.app.model.Activity;
 import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.model.ScoutLevel;
+import com.scoutscentral.app.model.data.DataRepository;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,7 +35,7 @@ public class DataRepositoryTest {
     public void testSeedData_ScoutsNotEmpty() {
         List<Scout> scouts = repository.getScouts().getValue();
         assertNotNull(scouts);
-        assertTrue(scouts.size() > 0);
+        assertFalse(scouts.isEmpty());
     }
 
     @Test
