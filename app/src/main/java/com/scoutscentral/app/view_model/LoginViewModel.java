@@ -14,21 +14,24 @@ import java.util.concurrent.Executors;
 
 public class LoginViewModel extends AndroidViewModel {
     private final SupabaseService supabaseService;
-    private final Executor backgroundExecutor = Executors.newSingleThreadExecutor();
+    private final Executor backgroundExecutor;
 
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> loginSuccess = new MutableLiveData<>(false);
 
     public LoginViewModel(@NonNull Application application) {
-        super(application);
-        this.supabaseService = new SupabaseService();
+        this(application, new SupabaseService(), Executors.newSingleThreadExecutor());
     }
 
-    // For testing
     public LoginViewModel(@NonNull Application application, SupabaseService supabaseService) {
+        this(application, supabaseService, Executors.newSingleThreadExecutor());
+    }
+
+    public LoginViewModel(@NonNull Application application, SupabaseService supabaseService, Executor executor) {
         super(application);
         this.supabaseService = supabaseService;
+        this.backgroundExecutor = executor;
     }
 
     public LiveData<Boolean> getIsLoading() {

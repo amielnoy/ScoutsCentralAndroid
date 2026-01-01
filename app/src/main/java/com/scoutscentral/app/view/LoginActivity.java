@@ -12,15 +12,20 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.scoutscentral.app.MainActivity;
 import com.scoutscentral.app.R;
 import com.scoutscentral.app.model.data.SupabaseService;
 import com.scoutscentral.app.view_model.LoginViewModel;
 
+import java.util.concurrent.Executor;
+
 public class LoginActivity extends AppCompatActivity {
     private LoginViewModel viewModel;
     private ProgressBar progressBar;
-    private SupabaseService testSupabaseService;
+    
+    @VisibleForTesting
+    public static SupabaseService testSupabaseService;
+    @VisibleForTesting
+    public static Executor testExecutor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +33,11 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         if (testSupabaseService != null) {
-            viewModel = new LoginViewModel(getApplication(), testSupabaseService);
+            if (testExecutor != null) {
+                viewModel = new LoginViewModel(getApplication(), testSupabaseService, testExecutor);
+            } else {
+                viewModel = new LoginViewModel(getApplication(), testSupabaseService);
+            }
         } else {
             viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         }
@@ -49,11 +58,6 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         observeViewModel();
-    }
-
-    @VisibleForTesting
-    public void setSupabaseService(SupabaseService service) {
-        this.testSupabaseService = service;
     }
 
     private void observeViewModel() {
