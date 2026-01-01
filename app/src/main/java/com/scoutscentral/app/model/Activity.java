@@ -4,12 +4,12 @@ import java.util.List;
 
 public class Activity {
   private final String id;
-  private String title;
-  private String date;
-  private String location;
-  private List<String> materials;
-  private String description;
-  private String imageUrl;
+  private final String title;
+  private final String date;
+  private final String location;
+  private final List<String> materials;
+  private final String description;
+  private final String imageUrl;
 
   public Activity(String id, String title, String date, String location, List<String> materials,
                   String description, String imageUrl) {
