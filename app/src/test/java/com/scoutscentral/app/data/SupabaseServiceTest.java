@@ -3,6 +3,8 @@ package com.scoutscentral.app.data;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import com.scoutscentral.app.model.ScoutLevel;
+
 import org.junit.Before;
 import org.junit.Test;
 
