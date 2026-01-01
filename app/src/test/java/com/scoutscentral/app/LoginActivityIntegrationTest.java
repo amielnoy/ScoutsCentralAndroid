@@ -17,7 +17,7 @@ import android.os.Looper;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.scoutscentral.app.data.SupabaseService;
+import com.scoutscentral.app.model.data.SupabaseService;
 import com.scoutscentral.app.view.LoginActivity;
 
 import org.junit.Before;

@@ -4,7 +4,7 @@ public enum ScoutLevel {
   KEFIR("כפיר"),
   OFER("עופר"),
   NACHSHON("נחשון"),
-  A("a");
+  A("יהודה");
 
   private final String label;
 

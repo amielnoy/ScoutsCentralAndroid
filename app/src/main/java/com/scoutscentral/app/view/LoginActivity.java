@@ -6,24 +6,32 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.scoutscentral.app.MainActivity;
 import com.scoutscentral.app.R;
+import com.scoutscentral.app.model.data.SupabaseService;
 import com.scoutscentral.app.view_model.LoginViewModel;
 
 public class LoginActivity extends AppCompatActivity {
     private LoginViewModel viewModel;
     private ProgressBar progressBar;
+    private SupabaseService testSupabaseService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
+        if (testSupabaseService != null) {
+            viewModel = new LoginViewModel(getApplication(), testSupabaseService);
+        } else {
+            viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
+        }
 
         EditText emailInput = findViewById(R.id.login_email);
         EditText passwordInput = findViewById(R.id.login_password);
@@ -41,6 +49,11 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         observeViewModel();
+    }
+
+    @VisibleForTesting
+    public void setSupabaseService(SupabaseService service) {
+        this.testSupabaseService = service;
     }
 
     private void observeViewModel() {
