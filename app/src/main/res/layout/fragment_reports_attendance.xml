@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:orientation="vertical"
@@ -10,21 +11,28 @@
     android:layout_height="wrap_content"
     android:text="נוכחות בפעילויות"
     android:textStyle="bold"
-    android:textSize="18sp"
-    android:textColor="@color/text_primary" />
+    android:textSize="22sp"
+    android:textColor="#1A1C1E" />
 
   <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="מספרי נוכחות ב-5 הפעילויות האחרונות."
-    android:textColor="@color/text_secondary"
-    android:textSize="12sp"
+    android:textColor="#44474E"
+    android:textSize="14sp"
     android:layout_marginTop="4dp" />
+
+  <com.github.mikephil.charting.charts.HorizontalBarChart
+    android:id="@+id/attendance_chart"
+    android:layout_width="match_parent"
+    android:layout_height="300dp"
+    android:layout_marginTop="24dp" />
 
   <androidx.recyclerview.widget.RecyclerView
     android:id="@+id/attendance_list"
     android:layout_width="match_parent"
     android:layout_height="0dp"
     android:layout_weight="1"
-    android:layout_marginTop="12dp" />
+    android:layout_marginTop="12dp"
+    android:visibility="gone" />
 </LinearLayout>

@@ -2,20 +2,51 @@
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
   android:orientation="horizontal"
-  android:padding="12dp"
+  android:paddingVertical="8dp"
+  android:paddingHorizontal="16dp"
+  android:gravity="center_vertical"
   android:layoutDirection="rtl">
 
   <TextView
     android:id="@+id/attendance_activity"
-    android:layout_width="0dp"
+    android:layout_width="60dp"
     android:layout_height="wrap_content"
+    android:textSize="14sp"
+    android:textColor="#2E3A59"
+    android:maxLines="1"
+    android:ellipsize="end" />
+
+  <LinearLayout
+    android:layout_width="0dp"
+    android:layout_height="28dp"
     android:layout_weight="1"
-    android:textStyle="bold"
-    android:textColor="@color/text_primary" />
+    android:layout_marginHorizontal="12dp"
+    android:orientation="horizontal"
+    android:weightSum="45"
+    android:background="#F0F2F5">
+
+    <View
+      android:id="@+id/attendance_bar"
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_weight="0"
+      android:background="#3D6A4B" />
+
+    <View
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_weight="45"
+      android:id="@+id/attendance_empty_space" />
+
+  </LinearLayout>
 
   <TextView
     android:id="@+id/attendance_value"
-    android:layout_width="wrap_content"
+    android:layout_width="24dp"
     android:layout_height="wrap_content"
-    android:textColor="@color/primary" />
+    android:textSize="14sp"
+    android:textStyle="bold"
+    android:textColor="#2E3A59"
+    android:gravity="center" />
+
 </LinearLayout>
