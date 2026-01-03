@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -41,16 +42,35 @@ public class CommunicationFragment extends Fragment {
 
     EditText title = view.findViewById(R.id.announcement_title);
     EditText message = view.findViewById(R.id.announcement_message);
+    CheckBox checkSendHere = view.findViewById(R.id.check_send_here);
+    CheckBox checkSendEmail = view.findViewById(R.id.check_send_email);
     MaterialButton send = view.findViewById(R.id.send_announcement);
 
     send.setOnClickListener(v -> {
       String titleText = title.getText().toString().trim();
       String messageText = message.getText().toString().trim();
+      
       if (titleText.isEmpty() || messageText.isEmpty()) {
         Snackbar.make(view, "אנא מלא כותרת והודעה", Snackbar.LENGTH_SHORT).show();
         return;
       }
-      viewModel.sendAnnouncement(titleText, messageText);
+
+      boolean sendHere = checkSendHere.isChecked();
+      boolean sendEmail = checkSendEmail.isChecked();
+
+      if (!sendHere && !sendEmail) {
+        Snackbar.make(view, "אנא בחר לפחות ערוץ שליחה אחד", Snackbar.LENGTH_SHORT).show();
+        return;
+      }
+
+      if (sendHere) {
+        viewModel.sendAnnouncement(titleText, messageText);
+      }
+
+      if (sendEmail) {
+        viewModel.sendEmailToScouts(requireContext(), titleText, messageText);
+      }
+
       title.setText("");
       message.setText("");
       Snackbar.make(view, "ההודעה נשלחה!", Snackbar.LENGTH_SHORT).show();

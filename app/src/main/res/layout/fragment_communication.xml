@@ -69,6 +69,31 @@
           android:inputType="textMultiLine"
           android:layout_marginTop="12dp" />
 
+        <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:layout_marginTop="8dp"
+          android:gravity="center_vertical">
+
+          <CheckBox
+            android:id="@+id/check_send_here"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="שלח כאן"
+            android:checked="true" />
+
+          <CheckBox
+            android:id="@+id/check_send_email"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="שלח לדוא״ל"
+            android:checked="true" />
+
+        </LinearLayout>
+
         <com.google.android.material.button.MaterialButton
           android:id="@+id/send_announcement"
           android:layout_width="match_parent"
