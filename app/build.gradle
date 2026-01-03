@@ -20,17 +20,22 @@ android {
     versionCode 1
     versionName "1.0"
 
+    // Helper to get and clean properties/env vars
     def getSafeProperty = { name ->
         def val = localProps.getProperty(name) ?: System.getenv(name) ?: ""
+        // Strip quotes if they were added accidentally to the secret/property
         val = val.replace("\"", "")
+        // Escape backslashes for Java string generation
         return val.replace("\\", "\\\\")
     }
 
     def supabaseUrl = getSafeProperty("SUPABASE_URL")
     def supabaseAnonKey = getSafeProperty("SUPABASE_ANON_KEY")
+    def geminiApiKey = getSafeProperty("GEMINI_API_KEY")
     
     buildConfigField "String", "SUPABASE_URL", "\"${supabaseUrl}\""
     buildConfigField "String", "SUPABASE_ANON_KEY", "\"${supabaseAnonKey}\""
+    buildConfigField "String", "GEMINI_API_KEY", "\"${geminiApiKey}\""
 
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
