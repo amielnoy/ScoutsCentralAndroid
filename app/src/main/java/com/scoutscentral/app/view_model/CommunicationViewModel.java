@@ -14,7 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommunicationViewModel extends ViewModel {
-  private final DataRepository repository = DataRepository.getInstance();
+  private final DataRepository repository;
+
+  public CommunicationViewModel() {
+    this(DataRepository.getInstance());
+  }
+
+  public CommunicationViewModel(DataRepository repository) {
+    this.repository = repository;
+  }
 
   public LiveData<List<Announcement>> getAnnouncements() {
     return repository.getAnnouncements();
