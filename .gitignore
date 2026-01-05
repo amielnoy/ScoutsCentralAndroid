@@ -7,7 +7,6 @@ captures/
 *.iml
 .externalNativeBuild
 .cxx
-local.properties
 .DS_Store
 
 # Android Studio / IntelliJ IDEA
