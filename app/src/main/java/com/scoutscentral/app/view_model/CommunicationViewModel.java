@@ -8,19 +8,19 @@ import androidx.lifecycle.ViewModel;
 
 import com.scoutscentral.app.model.Announcement;
 import com.scoutscentral.app.model.Scout;
-import com.scoutscentral.app.model.data.DataRepository;
+import com.scoutscentral.app.model.data.Dal;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CommunicationViewModel extends ViewModel {
-  private final DataRepository repository;
+  private final Dal repository;
 
   public CommunicationViewModel() {
-    this(DataRepository.getInstance());
+    this(Dal.getInstance());
   }
 
-  public CommunicationViewModel(DataRepository repository) {
+  public CommunicationViewModel(Dal repository) {
     this.repository = repository;
   }
 

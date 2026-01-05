@@ -12,10 +12,10 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.scoutscentral.app.R;
-import com.scoutscentral.app.model.data.DataRepository;
+import com.scoutscentral.app.model.data.Dal;
 
 public class SettingsFragment extends Fragment {
-  private final DataRepository repository = DataRepository.getInstance();
+  private final Dal repository = Dal.getInstance();
 
   @Nullable
   @Override
