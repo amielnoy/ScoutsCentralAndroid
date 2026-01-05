@@ -10,7 +10,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import com.scoutscentral.app.model.Activity;
 import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.model.ScoutLevel;
-import com.scoutscentral.app.model.data.DataRepository;
+import com.scoutscentral.app.model.data.Dal;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -19,16 +19,16 @@ import org.junit.rules.TestRule;
 
 import java.util.List;
 
-public class DataRepositoryTest {
+public class DalTest {
 
     @Rule
     public TestRule rule = new InstantTaskExecutorRule();
 
-    private DataRepository repository;
+    private Dal repository;
 
     @Before
     public void setUp() {
-        repository = DataRepository.getInstance();
+        repository = Dal.getInstance();
     }
 
     @Test

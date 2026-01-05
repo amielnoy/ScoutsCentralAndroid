@@ -17,8 +17,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-public class DataRepository {
-  private static DataRepository instance;
+public class Dal {
+  private static Dal instance;
 
   private final MutableLiveData<List<Scout>> scouts = new MutableLiveData<>();
   private final MutableLiveData<List<Activity>> activities = new MutableLiveData<>();
@@ -27,15 +27,15 @@ public class DataRepository {
   private final MutableLiveData<Long> syncCompletedAt = new MutableLiveData<>();
   private final SupabaseService supabaseService = new SupabaseService();
 
-  private DataRepository() {
+  private Dal() {
     seedData();
     attendanceRecords.setValue(new ArrayList<>());
     syncWithSupabase(false);
   }
 
-  public static synchronized DataRepository getInstance() {
+  public static synchronized Dal getInstance() {
     if (instance == null) {
-      instance = new DataRepository();
+      instance = new Dal();
     }
     return instance;
   }
@@ -131,10 +131,13 @@ public class DataRepository {
     return syncCompletedAt;
   }
 
-  public void addScout(String name, ScoutLevel level, String contact) {
+  public void addScout(String name, ScoutLevel level, String contact, String avatarBase64) {
     List<Scout> current = new ArrayList<>(scouts.getValue());
     String id = "scout-" + System.currentTimeMillis();
-    Scout newScout = new Scout(id, name, "", level, contact, "", "", new ArrayList<>());
+    // In a real app, upload avatarBase64 to Supabase Storage and get URL
+    // For now we store the base64 string directly or a placeholder if empty
+    String avatarUrl = (avatarBase64 != null && !avatarBase64.isEmpty()) ? avatarBase64 : "";
+    Scout newScout = new Scout(id, name, avatarUrl, level, contact, "", "", new ArrayList<>());
     current.add(0, newScout);
     scouts.setValue(current);
     runSupabaseTask(() -> supabaseService.upsertScout(newScout));
