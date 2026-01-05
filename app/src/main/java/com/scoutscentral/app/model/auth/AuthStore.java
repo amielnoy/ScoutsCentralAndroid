@@ -9,6 +9,8 @@ public class AuthStore {
   private static final String PREFS = "scouts_auth";
   private static final String KEY_INSTRUCTOR_ID = "instructor_id";
   private static final String KEY_INSTRUCTOR_NAME = "instructor_name";
+  private static final String KEY_EMAIL = "email";
+  private static final String KEY_PASSWORD = "password";
 
   private AuthStore() {}
 
@@ -25,6 +27,21 @@ public class AuthStore {
       .putString(KEY_INSTRUCTOR_NAME, name)
       .commit(); // Use commit for immediate write
     Log.d(TAG, "Save success: " + success);
+  }
+
+  public static void saveCredentials(Context context, String email, String password) {
+    getPrefs(context).edit()
+      .putString(KEY_EMAIL, email)
+      .putString(KEY_PASSWORD, password)
+      .apply();
+  }
+
+  public static String getEmail(Context context) {
+    return getPrefs(context).getString(KEY_EMAIL, "");
+  }
+
+  public static String getPassword(Context context) {
+    return getPrefs(context).getString(KEY_PASSWORD, "");
   }
 
   public static void clear(Context context) {

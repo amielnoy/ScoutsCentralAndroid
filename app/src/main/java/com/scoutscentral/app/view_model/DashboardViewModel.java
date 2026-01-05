@@ -5,13 +5,13 @@ import androidx.lifecycle.ViewModel;
 
 import com.scoutscentral.app.model.Activity;
 import com.scoutscentral.app.model.Announcement;
-import com.scoutscentral.app.model.data.DataRepository;
+import com.scoutscentral.app.model.data.Dal;
 import com.scoutscentral.app.model.Scout;
 
 import java.util.List;
 
 public class DashboardViewModel extends ViewModel {
-  private final DataRepository repository = DataRepository.getInstance();
+  private final Dal repository = Dal.getInstance();
 
   public LiveData<List<Scout>> getScouts() {
     return repository.getScouts();

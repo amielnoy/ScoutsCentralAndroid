@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.scoutscentral.app.R;
+import com.scoutscentral.app.model.auth.AuthStore;
 import com.scoutscentral.app.model.data.SupabaseService;
 import com.scoutscentral.app.view_model.LoginViewModel;
 
@@ -47,6 +48,16 @@ public class LoginActivity extends AppCompatActivity {
         MaterialButton loginButton = findViewById(R.id.login_submit);
         progressBar = findViewById(R.id.login_progress);
 
+        String savedEmail = AuthStore.getEmail(this);
+        String savedPassword = AuthStore.getPassword(this);
+
+        if (!savedEmail.isEmpty()) {
+            emailInput.setText(savedEmail);
+        }
+        if (!savedPassword.isEmpty()) {
+            passwordInput.setText(savedPassword);
+        }
+
         loginButton.setOnClickListener(v -> {
             String email = emailInput.getText().toString().trim();
             String password = passwordInput.getText().toString();
@@ -54,6 +65,7 @@ public class LoginActivity extends AppCompatActivity {
                 Snackbar.make(v, "אנא מלאו אימייל וסיסמה", Snackbar.LENGTH_SHORT).show();
                 return;
             }
+            // Logic moved to ViewModel to save only on success
             viewModel.login(email, password);
         });
 

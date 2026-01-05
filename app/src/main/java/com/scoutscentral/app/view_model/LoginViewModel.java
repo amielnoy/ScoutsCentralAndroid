@@ -58,6 +58,7 @@ public class LoginViewModel extends AndroidViewModel {
                 SupabaseService.Instructor instructor = supabaseService.authenticateInstructor(email, password);
                 if (instructor != null) {
                     AuthStore.saveInstructor(getApplication(), instructor.id, instructor.name);
+                    AuthStore.saveCredentials(getApplication(), email, password); // Save credentials upon successful login
                     loginSuccess.postValue(true);
                 } else {
                     errorMessage.postValue("פרטי התחברות שגויים");
