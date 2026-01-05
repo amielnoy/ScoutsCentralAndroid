@@ -40,6 +40,10 @@ public class Scout {
     return avatarUrl;
   }
 
+  public void setAvatarUrl(String avatarUrl) {
+    this.avatarUrl = avatarUrl;
+  }
+
   public ScoutLevel getLevel() {
     return level;
   }

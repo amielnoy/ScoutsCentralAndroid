@@ -10,21 +10,21 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.scoutscentral.app.model.AttendanceRecord;
-import com.scoutscentral.app.model.data.DataRepository;
+import com.scoutscentral.app.model.data.Dal;
 import com.scoutscentral.app.model.Scout;
 
 import java.util.List;
 
 public class ReportsViewModel extends ViewModel {
   private static final String TAG = "ReportsViewModel";
-  private final DataRepository repository;
+  private final Dal repository;
   private final MutableLiveData<String> summary = new MutableLiveData<>();
 
   public ReportsViewModel() {
-    this(DataRepository.getInstance());
+    this(Dal.getInstance());
   }
 
-  public ReportsViewModel(DataRepository repository) {
+  public ReportsViewModel(Dal repository) {
     this.repository = repository;
   }
 

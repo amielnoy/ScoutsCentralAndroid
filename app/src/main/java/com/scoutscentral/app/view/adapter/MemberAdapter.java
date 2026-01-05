@@ -1,5 +1,8 @@
 package com.scoutscentral.app.view.adapter;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -54,11 +57,30 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
     holder.name.setText(scout.getName());
     holder.level.setText(scout.getLevel().getLabel());
     holder.contact.setText(scout.getContact());
-    Glide.with(holder.itemView)
-      .load(scout.getAvatarUrl())
-      .placeholder(R.drawable.avatar_placeholder)
-      .error(R.drawable.avatar_placeholder)
-      .into(holder.avatar);
+
+    String avatarUrl = scout.getAvatarUrl();
+    if (avatarUrl != null && !avatarUrl.isEmpty()) {
+       if (!avatarUrl.startsWith("http")) {
+          // Assume Base64
+          try {
+             byte[] decodedString = Base64.decode(avatarUrl, Base64.DEFAULT);
+             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+             holder.avatar.setImageBitmap(decodedByte);
+          } catch (Exception e) {
+              holder.avatar.setImageResource(R.drawable.avatar_placeholder);
+          }
+       } else {
+           // Assume URL
+           Glide.with(holder.itemView)
+              .load(avatarUrl)
+              .placeholder(R.drawable.avatar_placeholder)
+              .error(R.drawable.avatar_placeholder)
+              .into(holder.avatar);
+       }
+    } else {
+       holder.avatar.setImageResource(R.drawable.avatar_placeholder);
+    }
+
     holder.menu.setOnClickListener(v -> showMenu(v, scout));
   }
 

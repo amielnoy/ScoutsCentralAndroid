@@ -5,10 +5,27 @@
   android:padding="16dp"
   android:layoutDirection="rtl">
 
+    <ImageView
+        android:id="@+id/member_image_input"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/darker_gray"
+        android:scaleType="centerCrop"
+        android:src="@drawable/avatar_placeholder" />
+
+    <Button
+        android:id="@+id/btn_capture_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="צלם תמונה"
+        android:layout_marginBottom="12dp" />
+
   <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="שם"
+    android:text="@string/pupils_name"
     android:textColor="@color/text_secondary" />
 
   <EditText

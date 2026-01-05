@@ -49,5 +49,5 @@
     android:layout_height="40dp"
     android:background="@android:color/transparent"
     android:src="@drawable/ic_more"
-    android:contentDescription="" />
+    android:contentDescription="@string/todo" />
 </LinearLayout>
