@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.scoutscentral.app.model.data.DataRepository;
+import com.scoutscentral.app.model.data.Dal;
 import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.model.data.GeminiService;
 
@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ProgressViewModel extends ViewModel {
   private static final String TAG = "ProgressViewModel";
-  private final DataRepository repository = DataRepository.getInstance();
+  private final Dal repository = Dal.getInstance();
   private final GeminiService geminiService = new GeminiService();
   private final MutableLiveData<String> generatedPlan = new MutableLiveData<>();
 
