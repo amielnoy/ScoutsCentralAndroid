@@ -1,18 +1,19 @@
 <resources>
-  <string name="app_name"> צופים+</string>
-  <string name="nav_dashboard">לוח מחוונים</string>
-  <string name="nav_members">חברים</string>
+  <string name="app_name">צופים+</string>
+  <string name="nav_home">בית</string>
   <string name="nav_activities">פעילויות</string>
+  <string name="nav_members">חניכים</string>
+  <string name="nav_profile">פרופיל</string>
+  <string name="login">כניסה</string>
+  <string name="login_caption">התחברו כדי להמשיך למערכת.</string>
+  <string name="nav_dashboard">לוח בקרה</string>
   <string name="nav_progress">התקדמות</string>
   <string name="nav_communication">תקשורת</string>
   <string name="nav_reports">דוחות</string>
   <string name="nav_settings">הגדרות</string>
   <string name="nav_logout">התנתקות</string>
-  <string name="action_add">הוסף</string>
-  <string name="action_send">שלח</string>
-  <string name="action_generate">צור</string>
-  <string name="action_save">שמור</string>
-  <string name="program_string">התוכנית שתיצור תוצג כאן.</string>
-  <string name="proposed_program">מסלול מוצע</string>
-  <string name="login">כניסה</string>
+  <string name="proposed_program">תוכנית מוצעת</string>
+  <string name="program_string">תוכן התוכנית</string>
+    <string name="pupils_name">שם</string>
+    <string name="todo">TODO</string>
 </resources>
