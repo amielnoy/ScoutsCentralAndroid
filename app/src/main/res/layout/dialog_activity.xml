@@ -27,7 +27,9 @@
     android:id="@+id/activity_date_input"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:hint="2024-07-15 10:00" />
+    android:hint="יש לבחור תאריך ושעה"
+      android:focusable="false"
+      android:clickable="true"/>
 
   <TextView
     android:layout_width="wrap_content"
