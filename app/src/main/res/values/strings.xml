@@ -16,4 +16,5 @@
   <string name="program_string">תוכן התוכנית</string>
     <string name="pupils_name">שם</string>
     <string name="todo">TODO</string>
+    <string name="todo2">TODO</string>
 </resources>
