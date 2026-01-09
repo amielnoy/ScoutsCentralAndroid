@@ -172,6 +172,13 @@ public class Dal {
     runSupabaseTask(() -> supabaseService.upsertActivity(newActivity));
   }
 
+  public void deleteActivity(String id) {
+      List<Activity> current = new ArrayList<>(activities.getValue());
+      current.removeIf(activity -> activity.getId().equals(id));
+      activities.setValue(current);
+      runSupabaseTask(() -> supabaseService.deleteActivity(id));
+  }
+
   public void addAnnouncement(String title, String message) {
     List<Announcement> current = new ArrayList<>(announcements.getValue());
     String id = "ann-" + System.currentTimeMillis();

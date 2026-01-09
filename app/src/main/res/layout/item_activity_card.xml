@@ -6,52 +6,69 @@
   app:cardCornerRadius="16dp"
   app:cardElevation="2dp">
 
-  <LinearLayout
+  <FrameLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layoutDirection="rtl"
-    android:padding="16dp">
+    android:layout_height="wrap_content">
 
-    <ImageView
-      android:id="@+id/activity_image"
-      android:layout_width="match_parent"
-      android:layout_height="160dp"
-      android:scaleType="centerCrop"
-      android:src="@drawable/activity_placeholder"
-      android:contentDescription="" />
-
-    <TextView
-      android:id="@+id/activity_card_title"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:textStyle="bold"
-      android:textSize="18sp"
-      android:textColor="@color/text_primary"
-      android:layout_marginTop="12dp" />
-
-    <TextView
-      android:id="@+id/activity_card_date"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:textColor="@color/primary"
-      android:textSize="12sp"
-      android:layout_marginTop="4dp" />
-
-    <TextView
-      android:id="@+id/activity_card_description"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:textColor="@color/text_secondary"
-      android:textSize="12sp"
-      android:layout_marginTop="8dp" />
-
-    <com.google.android.material.button.MaterialButton
-      android:id="@+id/activity_attendance"
+    <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:text="מעקב נוכחות"
-      android:layout_marginTop="12dp"
-      style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-  </LinearLayout>
+      android:orientation="vertical"
+      android:layoutDirection="rtl"
+      android:padding="16dp">
+
+      <ImageView
+        android:id="@+id/activity_image"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/activity_placeholder"
+        android:contentDescription="" />
+
+      <TextView
+        android:id="@+id/activity_card_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:textColor="@color/text_primary"
+        android:layout_marginTop="12dp" />
+
+      <TextView
+        android:id="@+id/activity_card_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/primary"
+        android:textSize="12sp"
+        android:layout_marginTop="4dp" />
+
+      <TextView
+        android:id="@+id/activity_card_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_secondary"
+        android:textSize="12sp"
+        android:layout_marginTop="8dp" />
+
+      <com.google.android.material.button.MaterialButton
+        android:id="@+id/activity_attendance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="מעקב נוכחות"
+        android:layout_marginTop="12dp"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/activity_menu"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_more"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_gravity="top|start"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        android:contentDescription="תפריט פעילות" />
+
+  </FrameLayout>
 </com.google.android.material.card.MaterialCardView>

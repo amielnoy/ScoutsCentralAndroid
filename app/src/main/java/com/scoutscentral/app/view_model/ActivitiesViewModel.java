@@ -18,4 +18,8 @@ public class ActivitiesViewModel extends ViewModel {
   public void addActivity(String title, String date, String location, String description) {
     repository.addActivity(title, date, location, description);
   }
+
+  public void deleteActivity(String id) {
+    repository.deleteActivity(id);
+  }
 }

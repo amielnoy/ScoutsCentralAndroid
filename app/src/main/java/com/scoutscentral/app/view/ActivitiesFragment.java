@@ -144,4 +144,17 @@ public class ActivitiesFragment extends Fragment implements ActivityCardAdapter.
       });
     }).start();
   }
+  
+  @Override
+  public void onDelete(Activity activity) {
+      new AlertDialog.Builder(getContext())
+          .setTitle("מחק פעילות")
+          .setMessage("האם אתה בטוח שברצונך למחוק את הפעילות \"" + activity.getTitle() + "\"?")
+          .setPositiveButton("מחק", (dialog, which) -> {
+              viewModel.deleteActivity(activity.getId());
+              Snackbar.make(requireView(), "הפעילות נמחקה", Snackbar.LENGTH_SHORT).show();
+          })
+          .setNegativeButton("ביטול", null)
+          .show();
+  }
 }
