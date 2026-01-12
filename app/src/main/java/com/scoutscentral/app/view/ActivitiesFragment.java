@@ -19,7 +19,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.scoutscentral.app.R;
 import com.scoutscentral.app.model.Activity;
-import com.scoutscentral.app.model.data.Dal;
+import com.scoutscentral.app.model.data.DataAccsesLayer;
 import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.view.adapter.ActivityCardAdapter;
 import com.scoutscentral.app.view_model.ActivitiesViewModel;
@@ -33,7 +33,7 @@ import java.util.Locale;
 public class ActivitiesFragment extends Fragment implements ActivityCardAdapter.ActivityActionListener {
   private ActivitiesViewModel viewModel;
   private ActivityCardAdapter adapter;
-  private final Dal repository = Dal.getInstance();
+  private final DataAccsesLayer repository = DataAccsesLayer.getInstance();
 
   @Nullable
   @Override
