@@ -157,6 +157,10 @@ public class SupabaseService {
     postJson("/activities?on_conflict=id", toActivityJson(activity), true);
   }
 
+  public void deleteActivity(String id) throws IOException {
+    executeRequest(requestBuilder("/activities?id=eq." + id).delete().build());
+  }
+
   public void upsertAnnouncement(Announcement announcement) throws IOException {
     postJson("/announcements?on_conflict=id", toAnnouncementJson(announcement), true);
   }
@@ -363,6 +367,7 @@ public class SupabaseService {
     obj.addProperty("date", activity.getDate());
     obj.addProperty("location", activity.getLocation());
     obj.addProperty("description", activity.getDescription());
+    obj.addProperty("image_url", activity.getImageUrl());
     JsonArray materials = new JsonArray();
     if (activity.getMaterials() != null) {
       for (String material : activity.getMaterials()) materials.add(material);
