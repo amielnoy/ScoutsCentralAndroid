@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.scoutscentral.app.R;
 import com.scoutscentral.app.model.Announcement;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +40,20 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
     Announcement ann = items.get(position);
     holder.title.setText(ann.getTitle());
     holder.message.setText(ann.getMessage());
-    holder.date.setText(ann.getDate());
+    holder.date.setText(formatDate(ann.getDate()));
+  }
+
+  private String formatDate(String isoDate) {
+      if (isoDate == null || isoDate.isEmpty()) {
+          return "";
+      }
+      try {
+          ZonedDateTime zonedDateTime = ZonedDateTime.parse(isoDate);
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy, HH:mm");
+          return zonedDateTime.format(formatter);
+      } catch (Exception e) {
+          return isoDate; // Fallback to original string if parsing fails
+      }
   }
 
   @Override
