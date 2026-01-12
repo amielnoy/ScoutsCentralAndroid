@@ -2,13 +2,13 @@ name: Android CI
 
 on:
   push:
-    branches: [ "main", "roni_scout","amiel_scout" ]
+    branches: [ "main", "roni_scout", "amiel_scout" ]
     paths-ignore:
       - '**.md'
       - '.gitignore'
       - 'setup_environment.sh'
   pull_request:
-    branches: [ "main", "master" ]
+    branches: [ "main", "roni_scout", "amiel_scout" ]
     paths-ignore:
       - '**.md'
       - '.gitignore'
@@ -18,11 +18,12 @@ jobs:
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
     steps:
       - name: Checkout Code
@@ -38,14 +39,12 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: wrapper
-          # Only save cache on the main branches to keep it lean and fast
-          cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' }}
+          # Allow writing cache on main and designated scout branches
+          cache-read-only: ${{ !contains(fromJSON('["refs/heads/main", "refs/heads/roni_scout", "refs/heads/amiel_scout"]'), github.ref) }}
 
       - name: Build and Unit Test
-        # Removed lint from the critical path to speed up the feedback loop.
-        # assembleDebug is faster than running full quality checks.
-        run: ./gradlew testDebugUnitTest assembleDebug --no-daemon --parallel --build-cache --configuration-cache
-
+        # Removed --configuration-cache as it is currently disabled in gradle.properties
+        run: ./gradlew testDebugUnitTest assembleDebug --no-daemon --parallel --build-cache
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
