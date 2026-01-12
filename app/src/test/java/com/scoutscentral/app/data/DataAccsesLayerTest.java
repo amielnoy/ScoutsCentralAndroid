@@ -10,7 +10,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import com.scoutscentral.app.model.Activity;
 import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.model.ScoutLevel;
-import com.scoutscentral.app.model.data.Dal;
+import com.scoutscentral.app.model.data.DataAccsesLayer;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -19,16 +19,16 @@ import org.junit.rules.TestRule;
 
 import java.util.List;
 
-public class DalTest {
+public class DataAccsesLayerTest {
 
     @Rule
     public TestRule rule = new InstantTaskExecutorRule();
 
-    private Dal repository;
+    private DataAccsesLayer repository;
 
     @Before
     public void setUp() {
-        repository = Dal.getInstance();
+        repository = DataAccsesLayer.getInstance();
     }
 
     @Test
