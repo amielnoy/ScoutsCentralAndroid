@@ -17,8 +17,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-public class Dal {
-  private static Dal instance;
+public class DataAccsesLayer {
+  private static DataAccsesLayer instance;
 
   private final MutableLiveData<List<Scout>> scouts = new MutableLiveData<>();
   private final MutableLiveData<List<Activity>> activities = new MutableLiveData<>();
@@ -27,15 +27,15 @@ public class Dal {
   private final MutableLiveData<Long> syncCompletedAt = new MutableLiveData<>();
   private final SupabaseService supabaseService = new SupabaseService();
 
-  private Dal() {
+  private DataAccsesLayer() {
     seedData();
     attendanceRecords.setValue(new ArrayList<>());
     syncWithSupabase(false);
   }
 
-  public static synchronized Dal getInstance() {
+  public static synchronized DataAccsesLayer getInstance() {
     if (instance == null) {
-      instance = new Dal();
+      instance = new DataAccsesLayer();
     }
     return instance;
   }
