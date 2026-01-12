@@ -18,7 +18,7 @@ jobs:
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 12
     
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -36,14 +36,14 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: wrapper
-          # Allow writing cache on main and designated scout branches
-          cache-read-only: ${{ !contains(fromJSON('["refs/heads/main", "refs/heads/roni_scout", "refs/heads/amiel_scout"]'), github.ref) }}
+          # Simplify cache writing: Only write on pushes to the main branches
+          cache-read-only: ${{ github.event_name == 'pull_request' }}
 
       - name: Build and Unit Test
-        # Removed --configuration-cache as it is currently disabled in gradle.properties
+        # Combined command for maximum efficiency
         run: ./gradlew testDebugUnitTest assembleDebug --no-daemon --parallel --build-cache
 
       - name: Upload Build Artifacts

@@ -69,30 +69,36 @@
           android:inputType="textMultiLine"
           android:layout_marginTop="12dp" />
 
-        <LinearLayout
+        <CheckBox
+          android:id="@+id/check_send_here"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="שלח כאן"
+          android:layout_marginTop="8dp"
+          android:checked="true" />
+
+        <RadioGroup
+          android:id="@+id/external_channel_group"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:orientation="horizontal"
-          android:layout_marginTop="8dp"
-          android:gravity="center_vertical">
+          android:layout_marginTop="4dp">
 
-          <CheckBox
-            android:id="@+id/check_send_here"
-            android:layout_width="0dp"
+          <RadioButton
+            android:id="@+id/radio_send_email"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="שלח כאן"
-            android:checked="true" />
-
-          <CheckBox
-            android:id="@+id/check_send_email"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="שלח לדוא״ל"
             android:checked="true" />
 
-        </LinearLayout>
+          <RadioButton
+            android:id="@+id/radio_send_whatsapp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="שלח ב-WhatsApp"
+            android:layout_marginRight="16dp" />
+
+        </RadioGroup>
 
         <com.google.android.material.button.MaterialButton
           android:id="@+id/send_announcement"

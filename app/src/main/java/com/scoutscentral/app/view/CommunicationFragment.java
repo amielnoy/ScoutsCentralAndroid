@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,7 +45,9 @@ public class CommunicationFragment extends Fragment {
     EditText title = view.findViewById(R.id.announcement_title);
     EditText message = view.findViewById(R.id.announcement_message);
     CheckBox checkSendHere = view.findViewById(R.id.check_send_here);
-    CheckBox checkSendEmail = view.findViewById(R.id.check_send_email);
+    RadioGroup externalGroup = view.findViewById(R.id.external_channel_group);
+    RadioButton radioEmail = view.findViewById(R.id.radio_send_email);
+    RadioButton radioWhatsapp = view.findViewById(R.id.radio_send_whatsapp);
     MaterialButton send = view.findViewById(R.id.send_announcement);
 
     send.setOnClickListener(v -> {
@@ -56,19 +60,19 @@ public class CommunicationFragment extends Fragment {
       }
 
       boolean sendHere = checkSendHere.isChecked();
-      boolean sendEmail = checkSendEmail.isChecked();
+      boolean sendEmail = radioEmail.isChecked();
+      boolean sendWhatsup = radioWhatsapp.isChecked();
 
-      if (!sendHere && !sendEmail) {
-        Snackbar.make(view, "אנא בחר לפחות ערוץ שליחה אחד", Snackbar.LENGTH_SHORT).show();
-        return;
-      }
-
+      // Since one of the radio buttons is checked by default, 
+      // we only need to check if internal sending is also needed.
       if (sendHere) {
         viewModel.sendAnnouncement(titleText, messageText);
       }
 
       if (sendEmail) {
         viewModel.sendEmailToScouts(requireContext(), titleText, messageText);
+      } else if (sendWhatsup) {
+        viewModel.sendWhatsappToScouts(requireContext(), messageText);
       }
 
       title.setText("");

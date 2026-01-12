@@ -52,9 +52,34 @@ public class CommunicationViewModel extends ViewModel {
     intent.putExtra(Intent.EXTRA_SUBJECT, title);
     intent.putExtra(Intent.EXTRA_TEXT, message);
     
-    // Create chooser to let user pick email client
     Intent chooser = Intent.createChooser(intent, "בחר אפליקציית דוא\"ל");
     chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     context.startActivity(chooser);
+  }
+
+  public void sendWhatsappToScouts(Context context, String message) {
+    List<Scout> scouts = repository.getScouts().getValue();
+    if (scouts == null || scouts.isEmpty()) return;
+
+    // WhatsApp doesn't support multiple recipients via Intent API directly without a business API
+    // The "Free API" approach for personal WhatsApp is the wa.me link or standard share intent
+    // To send to multiple people at once, we use the standard Android Share intent which allows selecting recipients
+    
+    Intent intent = new Intent(Intent.ACTION_SEND);
+    intent.setType("text/plain");
+    intent.setPackage("com.whatsapp");
+    intent.putExtra(Intent.EXTRA_TEXT, message);
+    
+    try {
+        Intent chooser = Intent.createChooser(intent, "שלח הודעה ב-WhatsApp");
+        chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(chooser);
+    } catch (Exception e) {
+        // Fallback if WhatsApp is not installed
+        Intent fallback = new Intent(Intent.ACTION_SEND);
+        fallback.setType("text/plain");
+        fallback.putExtra(Intent.EXTRA_TEXT, message);
+        context.startActivity(Intent.createChooser(fallback, "שתף הודעה"));
+    }
   }
 }
