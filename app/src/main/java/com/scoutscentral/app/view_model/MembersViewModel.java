@@ -3,14 +3,14 @@ package com.scoutscentral.app.view_model;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.scoutscentral.app.model.data.Dal;
+import com.scoutscentral.app.model.data.DataAccsesLayer;
 import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.model.ScoutLevel;
 
 import java.util.List;
 
 public class MembersViewModel extends ViewModel {
-  private final Dal repository = Dal.getInstance();
+  private final DataAccsesLayer repository = DataAccsesLayer.getInstance();
 
   public LiveData<List<Scout>> getScouts() {
     return repository.getScouts();

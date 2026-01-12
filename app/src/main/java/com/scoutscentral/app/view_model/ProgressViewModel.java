@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.scoutscentral.app.model.data.Dal;
+import com.scoutscentral.app.model.data.DataAccsesLayer;
 import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.model.data.GeminiService;
 
@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ProgressViewModel extends ViewModel {
   private static final String TAG = "ProgressViewModel";
-  private final Dal repository = Dal.getInstance();
+  private final DataAccsesLayer repository = DataAccsesLayer.getInstance();
   private final GeminiService geminiService = new GeminiService();
   private final MutableLiveData<String> generatedPlan = new MutableLiveData<>();
 
@@ -25,46 +25,34 @@ public class ProgressViewModel extends ViewModel {
     return generatedPlan;
   }
 
-  public void generatePlan(Scout scout, String additionalInterests, String additionalSkills) {
+  public void generatePlan(Scout scout, String positiveTraits, String negativeTraits) {
     generatedPlan.setValue("Gemini AI מנתח את נתוני החניך ומכין תוכנית אישית...");
     
     new Thread(() -> {
-      String combinedInterests = mergeData(scout.getInterests(), additionalInterests);
-      String combinedSkills = mergeData(scout.getSkills(), additionalSkills);
-      
       String plan;
       try {
-        String aiPlan = geminiService.generateProgressPlan(scout, combinedInterests, combinedSkills);
+        String aiPlan = geminiService.generateProgressPlan(scout, positiveTraits, negativeTraits);
         plan = (aiPlan == null || aiPlan.isEmpty())
-          ? buildFallbackPlan(scout, combinedInterests, combinedSkills)
+          ? buildFallbackPlan(scout, positiveTraits, negativeTraits)
           : aiPlan;
       } catch (Exception ex) {
         Log.e(TAG, "Gemini connection failed", ex);
         
-        // Use the specific error message from the service if available (e.g., 429 quota error)
         String errorMsg = ex.getMessage() != null ? ex.getMessage() : "שגיאה בתקשורת עם Gemini AI. וודא שיש חיבור אינטרנט תקין.";
         
         plan = errorMsg + "\n\n" + 
-               buildFallbackPlan(scout, combinedInterests, combinedSkills);
+               buildFallbackPlan(scout, positiveTraits, negativeTraits);
       }
       generatedPlan.postValue(plan);
     }).start();
   }
 
-  private String mergeData(String existing, String additional) {
-    String e = (existing != null) ? existing.trim() : "";
-    String a = (additional != null) ? additional.trim() : "";
-    if (e.isEmpty()) return a;
-    if (a.isEmpty()) return e;
-    return e + ", " + a;
-  }
-
-  private String buildFallbackPlan(Scout scout, String interests, String skills) {
+  private String buildFallbackPlan(Scout scout, String positiveTraits, String negativeTraits) {
     return "מסלול התקדמות מוצע (גרסת גיבוי) עבור " + scout.getName() + ":\n\n" +
-      "בהתבסס על תחומי עניין: " + (interests.isEmpty() ? "כללי" : interests) + "\n" +
-      "ועל כישורים נוכחיים: " + (skills.isEmpty() ? "מתחיל" : skills) + "\n\n" +
+      "בהתבסס על תכונות חיוביות: " + (positiveTraits.isEmpty() ? "כללי" : positiveTraits) + "\n" +
+      "ותכונות שליליות לשיפור: " + (negativeTraits.isEmpty() ? "אין" : negativeTraits) + "\n\n" +
       "1. השלמת דרגת " + scout.getLevel().name() + " באמצעות פרויקט מעשי.\n" +
       "2. השתתפות בפעילות שטח מורחבת.\n" +
-      "3. השגת תג מומחיות חדש בתחום העניין המרכזי.";
+      "3. השגת תג מומחיות חדש בתחום המבוסס על תכונותיו החיוביות.";
   }
 }
