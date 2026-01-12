@@ -52,12 +52,12 @@
         <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="תחומי עניין"
+          android:text="תכונות חיוביות"
           android:textColor="@color/text_secondary"
           android:layout_marginTop="12dp" />
 
         <EditText
-          android:id="@+id/progress_interests"
+          android:id="@+id/progress_positive_traits"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:minLines="2"
@@ -66,12 +66,12 @@
         <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="כישורים נוכחיים"
+          android:text="תכונות שליליות"
           android:textColor="@color/text_secondary"
           android:layout_marginTop="12dp" />
 
         <EditText
-          android:id="@+id/progress_skills"
+          android:id="@+id/progress_negative_traits"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:minLines="2"

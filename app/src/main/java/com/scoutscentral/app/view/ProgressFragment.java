@@ -39,8 +39,8 @@ public class ProgressFragment extends Fragment {
     viewModel = new ViewModelProvider(this).get(ProgressViewModel.class);
 
     Spinner spinner = view.findViewById(R.id.progress_scout_spinner);
-    EditText interests = view.findViewById(R.id.progress_interests);
-    EditText skills = view.findViewById(R.id.progress_skills);
+    EditText positiveTraits = view.findViewById(R.id.progress_positive_traits);
+    EditText negativeTraits = view.findViewById(R.id.progress_negative_traits);
     TextView result = view.findViewById(R.id.progress_result);
     MaterialButton generate = view.findViewById(R.id.progress_generate);
 
@@ -58,7 +58,7 @@ public class ProgressFragment extends Fragment {
         return;
       }
       Scout selected = scouts.get(index);
-      viewModel.generatePlan(selected, interests.getText().toString(), skills.getText().toString());
+      viewModel.generatePlan(selected, positiveTraits.getText().toString(), negativeTraits.getText().toString());
     });
 
     viewModel.getGeneratedPlan().observe(getViewLifecycleOwner(), result::setText);

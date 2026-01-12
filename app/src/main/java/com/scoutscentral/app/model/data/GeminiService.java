@@ -29,8 +29,8 @@ public class GeminiService {
             
     private final Gson gson = new Gson();
 
-    public String generateProgressPlan(Scout scout, String combinedInterests, String combinedSkills) throws IOException {
-        String prompt = buildPrompt(scout, combinedInterests, combinedSkills);
+    public String generateProgressPlan(Scout scout, String positiveTraits, String negativeTraits) throws IOException {
+        String prompt = buildPrompt(scout, positiveTraits, negativeTraits);
         
         try {
             return callGeminiApi("v1beta", "gemma-3-12b", prompt);
@@ -105,23 +105,24 @@ public class GeminiService {
         }
     }
 
-    private String buildPrompt(Scout scout, String combinedInterests, String combinedSkills) {
+    private String buildPrompt(Scout scout, String positiveTraits, String negativeTraits) {
         return String.format(
-            "אתה עוזר חכם ומנוסה של תנועת הצופים. צור תוכנית התקדמות אישית, מקצועית ומעוררת השראה עבור חניך בשם %s.\n\n" +
+            "אתה יועץ חכם ומנוסה בתנועת הצופים. המשימה שלך היא ליצור תוכנית התקדמות אישית, מקצועית ומעוררת השראה עבור חניך בשם %s, שמטרתה לחזק את התכונות החיוביות שלו ולסייע לו להתמודד עם התכונות השליליות.\n\n" +
             "פרטי החניך:\n" +
-            "⚜️ דרגה: %s\n" +
-            "🎨 תחומי עניין: %s\n" +
-            "🛠️ כישורים קיימים: %s\n\n" +
-            "אנא עצב את התוכנית בצורה ויזואלית יפה וקלה לקריאה ב-TextView של אנדרואיד, השתמש בכותרות ברורות, אייקונים (Emojis) ורווחים בין הפסקאות.\n\n" +
-            "מבנה התוכנית הנדרש:\n" +
-            "🌟 **משימות מעשיות ומאתגרות** (לפחות 3 משימות שמתחברות לתחומי העניין שלו).\n" +
-            "🏅 **תג המומחיות המוצע** (הצעה לתג חדש עם הסבר קצר למה הוא מתאים).\n" +
-            "💪 **טיפ להצלחה** (עצה קצרה ומחזקת).\n\n" +
-            "כתוב את התשובה בעברית רהוטה ומושכת.",
+            "📈 דרגה: %s\n" +
+            "👍 תכונות חיוביות לחיזוק: %s\n" +
+            "👎 תכונות שליליות לשיפור: %s\n\n" +
+            "הנחיות לבניית התוכנית:\n" +
+            "1.  **מבנה ויזואלי**: עצב את התוכנית בצורה ויזואלית יפה וקלה לקריאה ב-TextView של אנדרואיד. השתמש בכותרות ברורות, אייקונים (Emojis) ורווחים בין הפסקאות.\n" +
+            "2.  **תוכן התוכנית**:\n" +
+            "    - **🌟 משימות מעשיות**: הצע לפחות 3 משימות מעשיות ומאתגרות. כל משימה צריכה להתבסס על התכונות החיוביות של החניך כדי לחזק אותן, ובו זמנית לאתגר אותו בתחומים הקשורים לתכונות השליליות שלו.\n" +
+            "    - **🏅 תג מומחיות מוצע**: הצע תג מומחיות חדש שמתאים לחניך. הסבר בקצרה איך השגת התג תסייע לו לחזק את עצמו.\n" +
+            "    - **💪 טיפ להצלחה**: סיים עם עצה קצרה ומחזקת, המעודדת את החניך ומעניקה לו מוטיבציה.\n\n" +
+            "כתוב את כל התשובה בעברית רהוטה ומושכת, בגוף שני (פנייה ישירה לחניך).",
             scout.getName(),
             scout.getLevel().name(),
-            combinedInterests,
-            combinedSkills
+            positiveTraits,
+            negativeTraits
         );
     }
 }
