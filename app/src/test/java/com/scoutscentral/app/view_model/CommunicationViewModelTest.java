@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.core.content.IntentCompat;
 import androidx.lifecycle.MutableLiveData;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -68,7 +69,9 @@ public class CommunicationViewModelTest {
         // The Intent created by ViewModel is a chooser
         assertEquals(Intent.ACTION_CHOOSER, actualIntent.getAction());
         
-        Intent targetIntent = (Intent) actualIntent.getParcelableExtra(Intent.EXTRA_INTENT);
+        // Use IntentCompat to avoid deprecation warning for getParcelableExtra
+        Intent targetIntent = IntentCompat.getParcelableExtra(actualIntent, Intent.EXTRA_INTENT, Intent.class);
+        
         assertEquals(Intent.ACTION_SENDTO, targetIntent.getAction());
         assertEquals("mailto:", targetIntent.getData().toString());
         

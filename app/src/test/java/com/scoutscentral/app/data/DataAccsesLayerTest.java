@@ -48,11 +48,13 @@ public class DataAccsesLayerTest {
     @Test
     public void testAddScout_increasesCount() {
         int initialCount = repository.getScouts().getValue().size();
-        repository.addScout("Test Scout", ScoutLevel.KEFIR, "test@example.com");
+        String testAvatar = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==";
+        repository.addScout("Test Scout", ScoutLevel.KEFIR, "test@example.com", testAvatar);
         
         List<Scout> scouts = repository.getScouts().getValue();
         assertEquals(initialCount + 1, scouts.size());
         assertEquals("Test Scout", scouts.get(0).getName());
+        assertEquals(testAvatar, scouts.get(0).getAvatarUrl());
     }
 
     @Test

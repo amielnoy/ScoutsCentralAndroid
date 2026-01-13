@@ -40,7 +40,7 @@ public class LoginActivityIntegrationTest {
         mockService = mock(SupabaseService.class);
         when(mockService.isConfigured()).thenReturn(true);
         
-        // Set static fields BEFORE launching the activity
+        // Ensure static hooks are ready before launch
         LoginActivity.testSupabaseService = mockService;
         LoginActivity.testExecutor = Runnable::run;
     }
@@ -66,7 +66,12 @@ public class LoginActivityIntegrationTest {
     public void loginWithEmptyCredentials_showsError() {
         scenario = ActivityScenario.launch(LoginActivity.class);
         onView(withId(R.id.login_submit)).perform(click());
+        
+        // Process UI tasks to show Snackbar
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         ShadowLooper.idleMainLooper();
+        
+        // Check for text appearing in the hierarchy
         onView(withText("אנא מלאו אימייל וסיסמה")).check(matches(isDisplayed()));
     }
 
@@ -81,13 +86,14 @@ public class LoginActivityIntegrationTest {
         onView(withId(R.id.login_password)).perform(typeText("123456"), closeSoftKeyboard());
         onView(withId(R.id.login_submit)).perform(click());
 
-        // Process all main thread tasks (postValue, Snackbar show, etc.)
+        // Process all main thread tasks
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         ShadowLooper.idleMainLooper();
         
-        // Assert: Verify the error snackbar appears
+        // Assert: Verify the error message is displayed
         onView(withText("פרטי התחברות שגויים")).check(matches(isDisplayed()));
         
-        // Assert: Verify progress bar is gone
+        // Assert: Verify progress bar is hidden
         onView(withId(R.id.login_progress)).check(matches(not(isDisplayed())));
     }
 }

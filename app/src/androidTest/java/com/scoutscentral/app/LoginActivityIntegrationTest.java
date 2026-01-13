@@ -35,12 +35,14 @@ public class LoginActivityIntegrationTest {
     }
 
     @Test
-    public void loginWithEmptyCredentials_showsError() {
+    public void loginWithEmptyCredentials_showsError() throws InterruptedException {
         // Click login button without entering anything
         onView(withId(R.id.login_submit)).perform(click());
 
-        // Check if snackbar or similar error message is shown
-        // Note: Snackbar matching can be tricky, but we can check for the text
+        // Wait a short moment for the Snackbar animation to complete
+        Thread.sleep(500);
+
+        // Correct text for empty credentials validation
         onView(withText("אנא מלאו אימייל וסיסמה")).check(matches(isDisplayed()));
     }
 
@@ -52,10 +54,10 @@ public class LoginActivityIntegrationTest {
 
         onView(withId(R.id.login_submit)).perform(click());
 
-        // Wait for network response (if testing real integration)
-        // For a true integration test, we wait for the error message from Supabase
+        // Wait for the simulated network response and animation
         Thread.sleep(2000); 
 
+        // Correct text for authentication failure
         onView(withText("פרטי התחברות שגויים")).check(matches(isDisplayed()));
     }
 }

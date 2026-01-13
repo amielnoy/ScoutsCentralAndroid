@@ -55,7 +55,7 @@
           android:id="@+id/login_password"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:hint="סיסמה"
+          android:hint="@string/password"
           android:inputType="textPassword" />
       </com.google.android.material.textfield.TextInputLayout>
 
@@ -63,7 +63,7 @@
         android:id="@+id/login_submit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="כניסה"
+        android:text="@string/login_submit_button"
         android:layout_marginTop="16dp"
         style="@style/Widget.MaterialComponents.Button" />
     </LinearLayout>
