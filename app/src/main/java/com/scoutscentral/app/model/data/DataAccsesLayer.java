@@ -54,7 +54,7 @@ public class DataAccsesLayer {
     scoutList.add(new Scout("4", "אמה סטון", "", ScoutLevel.NACHSHON,
       "emma.parent@example.com", "תכנות, רובוטיקה, ניסויים מדעיים",
       "פייתון בסיסי, בניית מעגלים פשוטים", Collections.emptyList()));
-    scoutList.add(new Scout("5", "אווה ווילו", "", ScoutLevel.A,
+    scoutList.add(new Scout("5", "אווה ווילו", "", ScoutLevel.YEHUDA,
       "ava.parent@example.com", "מנהיגות, תכנון אירועים, חניכת צופים צעירים",
       "דיבור בפני קהל, ניהול פרויקטים", Arrays.asList("act-2", "act-4")));
     scouts.setValue(scoutList);
