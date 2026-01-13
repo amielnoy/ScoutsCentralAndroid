@@ -30,82 +30,115 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="16dp"
-      app:cardCornerRadius="12dp">
+      app:cardCornerRadius="16dp"
+      app:cardElevation="2dp">
 
       <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp">
 
         <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="צור הודעה"
+          android:text="צור הודעה חדשה"
           android:textStyle="bold"
-          android:textColor="@color/text_primary" />
+          android:textSize="16sp"
+          android:textColor="@color/primary" />
+
+        <com.google.android.material.textfield.TextInputLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="16dp"
+          android:hint="כותרת ההודעה"
+          style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+          <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/announcement_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapSentences" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="12dp"
+          android:hint="תוכן ההודעה"
+          style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+          <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/announcement_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minLines="4"
+            android:gravity="top"
+            android:inputType="textMultiLine" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <View
+          android:layout_width="match_parent"
+          android:layout_height="1dp"
+          android:background="#EEEEEE"
+          android:layout_marginTop="20dp"
+          android:layout_marginBottom="16dp" />
 
         <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="כתוב הודעה חדשה לשליחה לשבט."
+          android:text="בחר ערוצי שליחה חיצוניים:"
+          android:textSize="13sp"
           android:textColor="@color/text_secondary"
-          android:textSize="12sp"
-          android:layout_marginTop="4dp" />
+          android:layout_marginBottom="8dp" />
 
-        <EditText
-          android:id="@+id/announcement_title"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:hint="כותרת"
-          android:layout_marginTop="12dp" />
-
-        <EditText
-          android:id="@+id/announcement_message"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:hint="כתוב את הודעתך כאן..."
-          android:minLines="4"
-          android:inputType="textMultiLine"
-          android:layout_marginTop="12dp" />
-
-        <CheckBox
-          android:id="@+id/check_send_here"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="שלח כאן"
-          android:layout_marginTop="8dp"
-          android:checked="true" />
-
-        <RadioGroup
+        <com.google.android.material.button.MaterialButtonToggleGroup
           android:id="@+id/external_channel_group"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:orientation="horizontal"
-          android:layout_marginTop="4dp">
+          app:singleSelection="true"
+          app:selectionRequired="true"
+          android:layoutDirection="ltr"
+          android:gravity="center">
 
-          <RadioButton
-            android:id="@+id/radio_send_email"
-            android:layout_width="wrap_content"
+          <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_select_email"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="שלח לדוא״ל"
-            android:checked="true" />
+            android:text="דוא״ל"
+            app:icon="@android:drawable/ic_dialog_email"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
-          <RadioButton
-            android:id="@+id/radio_send_whatsapp"
-            android:layout_width="wrap_content"
+          <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_select_whatsapp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="שלח ב-WhatsApp"
-            android:layout_marginRight="16dp" />
+            android:text="WhatsApp"
+            app:icon="@android:drawable/stat_sys_phone_call"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
-        </RadioGroup>
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+          android:id="@+id/check_send_here"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="שמור ופרסם גם באפליקציה (שלח כאן)"
+          android:layout_marginTop="12dp"
+          android:checked="true"
+          android:textSize="14sp" />
 
         <com.google.android.material.button.MaterialButton
           android:id="@+id/send_announcement"
           android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:text="שלח הודעה"
-          android:layout_marginTop="12dp"
+          android:layout_height="56dp"
+          android:text="שלח הודעה כעת"
+          android:layout_marginTop="16dp"
+          app:cornerRadius="28dp"
+          android:textSize="16sp"
+          android:textStyle="bold"
           style="@style/Widget.MaterialComponents.Button" />
       </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
@@ -113,17 +146,17 @@
     <TextView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="הודעות שנשלחו"
+      android:text="היסטוריית הודעות"
       android:textStyle="bold"
       android:textSize="18sp"
       android:textColor="@color/text_primary"
-      android:layout_marginTop="24dp" />
+      android:layout_marginTop="32dp" />
 
     <androidx.recyclerview.widget.RecyclerView
       android:id="@+id/sent_list"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:nestedScrollingEnabled="false"
-      android:layout_marginTop="8dp" />
+      android:layout_marginTop="12dp" />
   </LinearLayout>
 </ScrollView>

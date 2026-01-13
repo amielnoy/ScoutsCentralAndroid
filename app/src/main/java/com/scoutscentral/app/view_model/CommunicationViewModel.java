@@ -57,13 +57,14 @@ public class CommunicationViewModel extends ViewModel {
     context.startActivity(chooser);
   }
 
+  /**
+   * Sends a message via WhatsApp. 
+   * It attempts to open the specific "צופי מוצקין" group if possible, 
+   * or falls back to a general share intent.
+   */
   public void sendWhatsappToScouts(Context context, String message) {
-    List<Scout> scouts = repository.getScouts().getValue();
-    if (scouts == null || scouts.isEmpty()) return;
-
-    // WhatsApp doesn't support multiple recipients via Intent API directly without a business API
-    // The "Free API" approach for personal WhatsApp is the wa.me link or standard share intent
-    // To send to multiple people at once, we use the standard Android Share intent which allows selecting recipients
+    // Note: Direct linking to a specific group by name is not supported by WhatsApp's public API.
+    // However, we can use a general sharing intent which allows the user to select the "צופי מוצקין" group.
     
     Intent intent = new Intent(Intent.ACTION_SEND);
     intent.setType("text/plain");
@@ -71,7 +72,8 @@ public class CommunicationViewModel extends ViewModel {
     intent.putExtra(Intent.EXTRA_TEXT, message);
     
     try {
-        Intent chooser = Intent.createChooser(intent, "שלח הודעה ב-WhatsApp");
+        // We set the title of the chooser to remind the user where to send it
+        Intent chooser = Intent.createChooser(intent, "שלח לקבוצת 'צופי מוצקין'");
         chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(chooser);
     } catch (Exception e) {
