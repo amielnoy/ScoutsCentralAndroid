@@ -2,6 +2,7 @@
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  android:fillViewport="true"
   android:layoutDirection="rtl">
 
   <LinearLayout
@@ -13,7 +14,7 @@
     <TextView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="צור סיכום"
+      android:text="סיכום השתתפות אישי"
       android:textStyle="bold"
       android:textSize="18sp"
       android:textColor="@color/text_primary" />
@@ -21,53 +22,132 @@
     <TextView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="בחר/י חניך/ה וטווח תאריכים כדי ליצור סיכום השתתפות."
+      android:text="בחר/י חניך/ה וטווח תאריכים להפקת דוח נוכחות מפורט."
       android:textColor="@color/text_secondary"
-      android:textSize="12sp"
+      android:textSize="13sp"
       android:layout_marginTop="4dp" />
 
-    <Spinner
-      android:id="@+id/report_scout_spinner"
+    <com.google.android.material.card.MaterialCardView
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginTop="12dp" />
+      android:layout_marginTop="16dp"
+      app:cardCornerRadius="12dp"
+      app:cardElevation="2dp">
 
-    <EditText
-      android:id="@+id/report_start_date"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:hint="בחר/י תאריך התחלה"
-      android:layout_marginTop="12dp"
-      android:inputType="none"
-      android:focusable="false"
-      android:clickable="true"
-      android:cursorVisible="false" />
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <EditText
-      android:id="@+id/report_end_date"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:hint="בחר/י תאריך סיום"
-      android:layout_marginTop="8dp"
-      android:inputType="none"
-      android:focusable="false"
-      android:clickable="true"
-      android:cursorVisible="false" />
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="בחר חניך/ה"
+          android:textSize="12sp"
+          android:textColor="@color/primary"
+          android:layout_marginBottom="4dp" />
 
-    <com.google.android.material.button.MaterialButton
-      android:id="@+id/report_generate"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:text="צור סיכום"
-      android:layout_marginTop="12dp"
-      style="@style/Widget.MaterialComponents.Button" />
+        <Spinner
+          android:id="@+id/report_scout_spinner"
+          android:layout_width="match_parent"
+          android:layout_height="48dp"
+          android:background="?android:attr/editTextBackground" />
 
-    <TextView
-      android:id="@+id/report_result"
+        <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:layout_marginTop="12dp">
+
+          <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:hint="מתאריך"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+            <com.google.android.material.textfield.TextInputEditText
+              android:id="@+id/report_start_date"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:focusable="false"
+              android:clickable="true"
+              android:inputType="none" />
+          </com.google.android.material.textfield.TextInputLayout>
+
+          <View android:layout_width="8dp" android:layout_height="0dp" />
+
+          <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:hint="עד תאריך"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+            <com.google.android.material.textfield.TextInputEditText
+              android:id="@+id/report_end_date"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:focusable="false"
+              android:clickable="true"
+              android:inputType="none" />
+          </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+          android:id="@+id/report_generate"
+          android:layout_width="match_parent"
+          android:layout_height="54dp"
+          android:text="הפק דוח סיכום"
+          android:layout_marginTop="16dp"
+          app:cornerRadius="8dp"
+          style="@style/Widget.MaterialComponents.Button" />
+      </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:text="הסיכום שתיצור יוצג כאן."
-      android:textColor="@color/text_secondary"
-      android:layout_marginTop="16dp" />
+      android:layout_marginTop="20dp"
+      app:cardCornerRadius="16dp"
+      app:cardElevation="0dp"
+      app:strokeWidth="1dp"
+      app:strokeColor="#E0E0E0">
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:background="#FAFAFA">
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="תוצאת הדוח"
+          android:textStyle="bold"
+          android:textSize="16sp"
+          android:textColor="@color/primary"
+          android:layout_gravity="center_horizontal" />
+
+        <View
+          android:layout_width="40dp"
+          android:layout_height="3dp"
+          android:background="@color/primary"
+          android:layout_gravity="center_horizontal"
+          android:layout_marginTop="4dp"
+          android:layout_marginBottom="16dp" />
+
+        <TextView
+          android:id="@+id/report_result"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="כאן יוצג סיכום הפעילויות של החניך בטווח שנבחר."
+          android:textColor="#333333"
+          android:textSize="15sp"
+          android:lineSpacingExtra="6dp" />
+      </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
   </LinearLayout>
 </ScrollView>
