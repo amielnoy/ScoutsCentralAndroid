@@ -67,11 +67,10 @@ public class LoginActivityIntegrationTest {
         scenario = ActivityScenario.launch(LoginActivity.class);
         onView(withId(R.id.login_submit)).perform(click());
         
-        // Process UI tasks to show Snackbar
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        // In Robolectric, just idle the looper to process the click and the ensuing postValue/Snackbar
         ShadowLooper.idleMainLooper();
         
-        // Check for text appearing in the hierarchy
+        // Use a more relaxed matcher if isDisplayed() fails due to animation
         onView(withText("אנא מלאו אימייל וסיסמה")).check(matches(isDisplayed()));
     }
 
@@ -86,8 +85,7 @@ public class LoginActivityIntegrationTest {
         onView(withId(R.id.login_password)).perform(typeText("123456"), closeSoftKeyboard());
         onView(withId(R.id.login_submit)).perform(click());
 
-        // Process all main thread tasks
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        // Process main thread tasks
         ShadowLooper.idleMainLooper();
         
         // Assert: Verify the error message is displayed
