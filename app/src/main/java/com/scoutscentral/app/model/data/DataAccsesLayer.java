@@ -70,7 +70,7 @@ public class DataAccsesLayer {
       "שביל היער הלוחש", Arrays.asList("כפפות", "שקיות אשפה", "בקבוקי מים"),
       "טיול המתמקד בלימוד על הצמחייה המקומית וניקוי השביל.", getImageUrlForTitle("טיול שימור יערות")));
     activityList.add(new Activity("act-4", "ביקור במרכז גיל הזהב", "2024-08-10T14:00:00Z",
-      "מרכז גיל הזהב \"שדות مشמש\"", Arrays.asList("משחקי קופסה", "כרטיסי ברכה בעבודת יד"),
+      "מרכז גיל הזהב \"שדות משמש\"", Arrays.asList("משחקי קופסה", "כרטיסי ברכה בעבודת יד"),
       "בלו אחר הצהריים עם קשישים מקומיים, שתפו סיפורים ומשחקים.", getImageUrlForTitle("ביקור במרכז גיל הזהב")));
     activities.setValue(activityList);
 
@@ -134,8 +134,6 @@ public class DataAccsesLayer {
   public void addScout(String name, ScoutLevel level, String contact, String avatarBase64) {
     List<Scout> current = new ArrayList<>(scouts.getValue());
     String id = "scout-" + System.currentTimeMillis();
-    // In a real app, upload avatarBase64 to Supabase Storage and get URL
-    // For now we store the base64 string directly or a placeholder if empty
     String avatarUrl = (avatarBase64 != null && !avatarBase64.isEmpty()) ? avatarBase64 : "";
     Scout newScout = new Scout(id, name, avatarUrl, level, contact, "", "", new ArrayList<>());
     current.add(0, newScout);
@@ -170,6 +168,18 @@ public class DataAccsesLayer {
     current.add(0, newActivity);
     activities.setValue(current);
     runSupabaseTask(() -> supabaseService.upsertActivity(newActivity));
+  }
+
+  public void updateActivity(Activity updated) {
+    List<Activity> current = new ArrayList<>(activities.getValue());
+    for (int i = 0; i < current.size(); i++) {
+      if (current.get(i).getId().equals(updated.getId())) {
+        current.set(i, updated);
+        break;
+      }
+    }
+    activities.setValue(current);
+    runSupabaseTask(() -> supabaseService.upsertActivity(updated));
   }
 
   public void deleteActivity(String id) {

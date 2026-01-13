@@ -19,6 +19,10 @@ public class ActivitiesViewModel extends ViewModel {
     repository.addActivity(title, date, location, description);
   }
 
+  public void updateActivity(Activity activity) {
+    repository.updateActivity(activity);
+  }
+
   public void deleteActivity(String id) {
     repository.deleteActivity(id);
   }

@@ -32,17 +32,19 @@ import com.scoutscentral.app.view.adapter.MemberAdapter;
 import com.scoutscentral.app.view_model.MembersViewModel;
 
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MembersFragment extends Fragment implements MemberAdapter.MemberActionListener {
   private MembersViewModel viewModel;
   private MemberAdapter adapter;
-  private List<ScoutLevel> levels = new ArrayList<>();
+  private final List<ScoutLevel> levels = new ArrayList<>();
   private ActivityResultLauncher<Void> takePictureLauncher;
   private ImageView currentDialogImageView;
   private Bitmap currentCapturedImage;
+  
+  // Track if we are capturing for a list item or a dialog
+  private Scout activeCaptureScout;
 
   @Nullable
   @Override
@@ -58,13 +60,31 @@ public class MembersFragment extends Fragment implements MemberAdapter.MemberAct
       new ActivityResultContracts.TakePicturePreview(),
       bitmap -> {
         if (bitmap != null) {
-          currentCapturedImage = bitmap;
-          if (currentDialogImageView != null) {
-            currentDialogImageView.setImageBitmap(bitmap);
+          if (activeCaptureScout != null) {
+              // Capture from list item: upload immediately
+              uploadCapturedImage(activeCaptureScout, bitmap);
+              activeCaptureScout = null;
+          } else {
+              // Capture from dialog: just update preview
+              currentCapturedImage = bitmap;
+              if (currentDialogImageView != null) {
+                currentDialogImageView.setImageBitmap(bitmap);
+              }
           }
         }
       }
     );
+  }
+
+  private void uploadCapturedImage(Scout scout, Bitmap bitmap) {
+      ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+      bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
+      byte[] byteArray = byteArrayOutputStream.toByteArray();
+      String avatarBase64 = Base64.encodeToString(byteArray, Base64.DEFAULT);
+      
+      scout.setAvatarUrl(avatarBase64);
+      viewModel.updateScout(scout);
+      Snackbar.make(requireView(), "תמונה עודכנה עבור " + scout.getName(), Snackbar.LENGTH_SHORT).show();
   }
 
   @Override
@@ -78,17 +98,23 @@ public class MembersFragment extends Fragment implements MemberAdapter.MemberAct
     list.setAdapter(adapter);
 
     MaterialButton addButton = view.findViewById(R.id.add_member);
-    addButton.setOnClickListener(v -> showMemberDialog(null));
+    addButton.setOnClickListener(v -> {
+        activeCaptureScout = null;
+        showMemberDialog(null);
+    });
 
     viewModel.getScouts().observe(getViewLifecycleOwner(), adapter::submitList);
 
-    for (ScoutLevel level : ScoutLevel.values()) {
-      levels.add(level);
+    if (levels.isEmpty()) {
+        for (ScoutLevel level : ScoutLevel.values()) {
+            levels.add(level);
+        }
     }
   }
 
   @Override
   public void onEdit(Scout scout) {
+    activeCaptureScout = null;
     showMemberDialog(scout);
   }
 
@@ -96,6 +122,13 @@ public class MembersFragment extends Fragment implements MemberAdapter.MemberAct
   public void onDelete(Scout scout) {
     viewModel.removeScout(scout.getId());
     Snackbar.make(requireView(), "חבר נמחק", Snackbar.LENGTH_SHORT).show();
+  }
+
+  @Override
+  public void onAvatarClick(Scout scout) {
+      // Trigger camera directly from list
+      activeCaptureScout = scout;
+      takePictureLauncher.launch(null);
   }
 
   private void showMemberDialog(Scout scout) {
@@ -109,9 +142,14 @@ public class MembersFragment extends Fragment implements MemberAdapter.MemberAct
     Button captureButton = dialogView.findViewById(R.id.btn_capture_image);
 
     currentDialogImageView = imageInput;
-    currentCapturedImage = null; // Reset for new dialog
+    currentCapturedImage = null;
 
-    captureButton.setOnClickListener(v -> takePictureLauncher.launch(null));
+    View.OnClickListener captureListener = v -> {
+        activeCaptureScout = null; // We are in dialog mode
+        takePictureLauncher.launch(null);
+    };
+    imageInput.setOnClickListener(captureListener);
+    captureButton.setOnClickListener(captureListener);
 
     ArrayAdapter<String> levelAdapter = new ArrayAdapter<>(
       requireContext(), android.R.layout.simple_spinner_dropdown_item, getLevelLabels());
@@ -124,7 +162,6 @@ public class MembersFragment extends Fragment implements MemberAdapter.MemberAct
       
       String avatarUrl = scout.getAvatarUrl();
       if (avatarUrl != null && !avatarUrl.isEmpty()) {
-          // If it's a base64 string
           if (!avatarUrl.startsWith("http")) {
              try {
                  byte[] decodedString = Base64.decode(avatarUrl, Base64.DEFAULT);
@@ -134,7 +171,6 @@ public class MembersFragment extends Fragment implements MemberAdapter.MemberAct
                  imageInput.setImageResource(R.drawable.avatar_placeholder);
              }
           } else {
-              // It's a real URL
               Glide.with(this)
                    .load(avatarUrl)
                    .placeholder(R.drawable.avatar_placeholder)
@@ -159,7 +195,7 @@ public class MembersFragment extends Fragment implements MemberAdapter.MemberAct
         String avatarBase64 = null;
         if (currentCapturedImage != null) {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            currentCapturedImage.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream); // Compress to 50% quality
+            currentCapturedImage.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
             byte[] byteArray = byteArrayOutputStream.toByteArray();
             avatarBase64 = Base64.encodeToString(byteArray, Base64.DEFAULT);
         }

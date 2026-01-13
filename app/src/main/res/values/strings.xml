@@ -19,4 +19,6 @@
     <string name="todo2">TODO</string>
     <string name="soon_activitys">פעילויות קרובות</string>
     <string name="login_submit_button">כניסה</string>
+    <string name="reports_and_data">דוחות ונתונים</string>
+    <string name="view_scouts_clan_activities">צפו בביצועי השבט, נוכחות חניכים וסיכומי פעילות.</string>
 </resources>

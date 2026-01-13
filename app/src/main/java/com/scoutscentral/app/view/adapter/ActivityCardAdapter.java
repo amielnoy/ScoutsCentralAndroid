@@ -26,6 +26,7 @@ public class ActivityCardAdapter extends RecyclerView.Adapter<ActivityCardAdapte
   public interface ActivityActionListener {
     void onAttendance(Activity activity);
     void onDelete(Activity activity);
+    void onImageClick(Activity activity); // Added for gallery access
   }
 
   private final List<Activity> items = new ArrayList<>();
@@ -57,11 +58,15 @@ public class ActivityCardAdapter extends RecyclerView.Adapter<ActivityCardAdapte
     holder.title.setText(activity.getTitle());
     holder.date.setText(formatDate(activity.getDate()));
     holder.description.setText(activity.getDescription());
+    
     Glide.with(holder.itemView)
       .load(activity.getImageUrl())
       .placeholder(R.drawable.activity_placeholder)
       .error(R.drawable.activity_placeholder)
       .into(holder.image);
+
+    // Set click listeners
+    holder.image.setOnClickListener(v -> listener.onImageClick(activity));
     holder.attendanceButton.setOnClickListener(v -> listener.onAttendance(activity));
     holder.menuButton.setOnClickListener(v -> showMenu(v, activity));
   }
@@ -88,7 +93,7 @@ public class ActivityCardAdapter extends RecyclerView.Adapter<ActivityCardAdapte
       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy, HH:mm");
       return zonedDateTime.format(formatter);
     } catch (Exception e) {
-      return isoDate; // Fallback to original string if parsing fails
+      return isoDate;
     }
   }
 

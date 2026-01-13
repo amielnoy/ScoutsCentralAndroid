@@ -3,12 +3,18 @@ package com.scoutscentral.app.view;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -24,6 +30,8 @@ import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.view.adapter.ActivityCardAdapter;
 import com.scoutscentral.app.view_model.ActivitiesViewModel;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -34,12 +42,28 @@ public class ActivitiesFragment extends Fragment implements ActivityCardAdapter.
   private ActivitiesViewModel viewModel;
   private ActivityCardAdapter adapter;
   private final DataAccsesLayer repository = DataAccsesLayer.getInstance();
+  
+  private ActivityResultLauncher<String> galleryLauncher;
+  private Activity activeActivityForImage;
 
   @Nullable
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                            @Nullable Bundle savedInstanceState) {
     return inflater.inflate(R.layout.fragment_activities, container, false);
+  }
+
+  @Override
+  public void onCreate(@Nullable Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      galleryLauncher = registerForActivityResult(
+          new ActivityResultContracts.GetContent(),
+          uri -> {
+              if (uri != null && activeActivityForImage != null) {
+                  handleGalleryResult(uri);
+              }
+          }
+      );
   }
 
   @Override
@@ -56,6 +80,27 @@ public class ActivitiesFragment extends Fragment implements ActivityCardAdapter.
     addButton.setOnClickListener(v -> showAddDialog());
 
     viewModel.getActivities().observe(getViewLifecycleOwner(), adapter::submitList);
+  }
+
+  private void handleGalleryResult(Uri uri) {
+      try {
+          InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
+          Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+          
+          ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+          bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
+          byte[] byteArray = byteArrayOutputStream.toByteArray();
+          String base64Image = Base64.encodeToString(byteArray, Base64.DEFAULT);
+          
+          activeActivityForImage.setImageUrl(base64Image);
+          viewModel.updateActivity(activeActivityForImage);
+          Snackbar.make(requireView(), "תמונת הפעילות עודכנה", Snackbar.LENGTH_SHORT).show();
+          
+      } catch (Exception e) {
+          Snackbar.make(requireView(), "שגיאה בטעינת התמונה", Snackbar.LENGTH_SHORT).show();
+      } finally {
+          activeActivityForImage = null;
+      }
   }
 
   private void showAddDialog() {
@@ -156,5 +201,11 @@ public class ActivitiesFragment extends Fragment implements ActivityCardAdapter.
           })
           .setNegativeButton("ביטול", null)
           .show();
+  }
+
+  @Override
+  public void onImageClick(Activity activity) {
+      activeActivityForImage = activity;
+      galleryLauncher.launch("image/*");
   }
 }

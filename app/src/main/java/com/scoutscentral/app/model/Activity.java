@@ -9,7 +9,7 @@ public class Activity {
   private final String location;
   private final List<String> materials;
   private final String description;
-  private final String imageUrl;
+  private String imageUrl;
 
   public Activity(String id, String title, String date, String location, List<String> materials,
                   String description, String imageUrl) {
@@ -48,5 +48,9 @@ public class Activity {
 
   public String getImageUrl() {
     return imageUrl;
+  }
+
+  public void setImageUrl(String imageUrl) {
+    this.imageUrl = imageUrl;
   }
 }

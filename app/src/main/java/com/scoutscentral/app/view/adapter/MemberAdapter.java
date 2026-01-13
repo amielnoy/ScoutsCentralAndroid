@@ -26,6 +26,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
   public interface MemberActionListener {
     void onEdit(Scout scout);
     void onDelete(Scout scout);
+    void onAvatarClick(Scout scout); // Added for direct camera access
   }
 
   private final List<Scout> items = new ArrayList<>();
@@ -61,7 +62,6 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
     String avatarUrl = scout.getAvatarUrl();
     if (avatarUrl != null && !avatarUrl.isEmpty()) {
        if (!avatarUrl.startsWith("http")) {
-          // Assume Base64
           try {
              byte[] decodedString = Base64.decode(avatarUrl, Base64.DEFAULT);
              Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
@@ -70,7 +70,6 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
               holder.avatar.setImageResource(R.drawable.avatar_placeholder);
           }
        } else {
-           // Assume URL
            Glide.with(holder.itemView)
               .load(avatarUrl)
               .placeholder(R.drawable.avatar_placeholder)
@@ -81,6 +80,8 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
        holder.avatar.setImageResource(R.drawable.avatar_placeholder);
     }
 
+    // Direct click on avatar in the list
+    holder.avatar.setOnClickListener(v -> listener.onAvatarClick(scout));
     holder.menu.setOnClickListener(v -> showMenu(v, scout));
   }
 
