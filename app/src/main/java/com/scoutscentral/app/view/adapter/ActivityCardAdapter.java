@@ -1,5 +1,8 @@
 package com.scoutscentral.app.view.adapter;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,13 +70,29 @@ public class ActivityCardAdapter extends ListAdapter<Activity, ActivityCardAdapt
     holder.date.setText(formatDate(activity.getDate()));
     holder.description.setText(activity.getDescription());
     
-    Glide.with(holder.itemView)
-      .load(activity.getImageUrl())
-      .placeholder(R.drawable.activity_placeholder)
-      .error(R.drawable.activity_placeholder)
-      .into(holder.image);
+    String imageUrl = activity.getImageUrl();
+    if (imageUrl != null && !imageUrl.isEmpty()) {
+        if (!imageUrl.startsWith("http")) {
+            // טיפול בתמונת Base64 שהועלתה מהגלריה
+            try {
+                byte[] decodedString = Base64.decode(imageUrl, Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                holder.image.setImageBitmap(decodedByte);
+            } catch (Exception e) {
+                holder.image.setImageResource(R.drawable.activity_placeholder);
+            }
+        } else {
+            // טעינת תמונה רגילה מהאינטרנט
+            Glide.with(holder.itemView)
+                .load(imageUrl)
+                .placeholder(R.drawable.activity_placeholder)
+                .error(R.drawable.activity_placeholder)
+                .into(holder.image);
+        }
+    } else {
+        holder.image.setImageResource(R.drawable.activity_placeholder);
+    }
 
-    // Set click listeners
     holder.image.setOnClickListener(v -> listener.onImageClick(activity));
     holder.attendanceButton.setOnClickListener(v -> listener.onAttendance(activity));
     holder.menuButton.setOnClickListener(v -> showMenu(v, activity));

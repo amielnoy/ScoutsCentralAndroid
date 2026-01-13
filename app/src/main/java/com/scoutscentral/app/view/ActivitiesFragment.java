@@ -87,17 +87,32 @@ public class ActivitiesFragment extends Fragment implements ActivityCardAdapter.
           InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
           Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
           
+          if (bitmap == null) return;
+
+          // דחיסת התמונה כדי שלא תתפוס יותר מדי מקום ב-DB
           ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
           bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
           byte[] byteArray = byteArrayOutputStream.toByteArray();
-          String base64Image = Base64.encodeToString(byteArray, Base64.DEFAULT);
           
-          activeActivityForImage.setImageUrl(base64Image);
-          viewModel.updateActivity(activeActivityForImage);
-          Snackbar.make(requireView(), "תמונת הפעילות עודכנה", Snackbar.LENGTH_SHORT).show();
+          // שימוש ב-NO_WRAP כדי למנוע תווים מיותרים בקידוד
+          String base64Image = Base64.encodeToString(byteArray, Base64.NO_WRAP);
+          
+          // יצירת מופע חדש של האובייקט - קריטי לרענון ה-RecyclerView (DiffUtil)
+          Activity updatedActivity = new Activity(
+              activeActivityForImage.getId(),
+              activeActivityForImage.getTitle(),
+              activeActivityForImage.getDate(),
+              activeActivityForImage.getLocation(),
+              activeActivityForImage.getMaterials(),
+              activeActivityForImage.getDescription(),
+              base64Image 
+          );
+          
+          viewModel.updateActivity(updatedActivity);
+          Snackbar.make(requireView(), "תמונת הפעילות עודכנה בהצלחה", Snackbar.LENGTH_SHORT).show();
           
       } catch (Exception e) {
-          Snackbar.make(requireView(), "שגיאה בטעינת התמונה", Snackbar.LENGTH_SHORT).show();
+          Snackbar.make(requireView(), "שגיאה בטעינת התמונה מהגלריה", Snackbar.LENGTH_SHORT).show();
       } finally {
           activeActivityForImage = null;
       }
