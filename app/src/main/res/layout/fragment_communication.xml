@@ -16,13 +16,13 @@
       android:layout_height="wrap_content"
       android:text="כלי תקשורת"
       android:textStyle="bold"
-      android:textSize="22sp"
+      android:textSize="24sp"
       android:textColor="@color/text_primary" />
 
     <TextView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="שלח הודעות ותזכורות לחניכים ולהורים."
+      android:text="נהלו את הקשר עם השבט בצורה חכמה."
       android:textColor="@color/text_secondary"
       android:layout_marginTop="4dp" />
 
@@ -30,8 +30,10 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="16dp"
-      app:cardCornerRadius="16dp"
-      app:cardElevation="2dp">
+      app:cardCornerRadius="20dp"
+      app:cardElevation="4dp"
+      app:strokeWidth="1dp"
+      app:strokeColor="#E0E0E0">
 
       <LinearLayout
         android:layout_width="match_parent"
@@ -42,37 +44,46 @@
         <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="צור הודעה חדשה"
+          android:text="יצירת הודעה חדשה"
           android:textStyle="bold"
-          android:textSize="16sp"
+          android:textSize="18sp"
           android:textColor="@color/primary" />
 
         <com.google.android.material.textfield.TextInputLayout
+          android:id="@+id/announcement_title_layout"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="16dp"
-          android:hint="כותרת ההודעה"
+          android:layout_marginTop="20dp"
+          android:hint="מה נושא ההודעה?"
+          app:startIconDrawable="@android:drawable/ic_menu_edit"
+          app:counterEnabled="true"
+          app:counterMaxLength="50"
           style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
           <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/announcement_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxLength="50"
             android:inputType="textCapSentences" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+          android:id="@+id/announcement_message_layout"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginTop="12dp"
-          android:hint="תוכן ההודעה"
+          android:hint="כתבו את תוכן ההודעה כאן..."
+          app:startIconDrawable="@android:drawable/ic_dialog_info"
+          app:counterEnabled="true"
+          app:counterMaxLength="500"
           style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
           <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/announcement_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minLines="4"
+            android:minLines="5"
             android:gravity="top"
             android:inputType="textMultiLine" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -81,16 +92,17 @@
           android:layout_width="match_parent"
           android:layout_height="1dp"
           android:background="#EEEEEE"
-          android:layout_marginTop="20dp"
+          android:layout_marginTop="16dp"
           android:layout_marginBottom="16dp" />
 
         <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="בחר ערוצי שליחה חיצוניים:"
-          android:textSize="13sp"
-          android:textColor="@color/text_secondary"
-          android:layout_marginBottom="8dp" />
+          android:text="בחרו לאן לשלוח:"
+          android:textSize="14sp"
+          android:textStyle="bold"
+          android:textColor="@color/text_primary"
+          android:layout_marginBottom="12dp" />
 
         <com.google.android.material.button.MaterialButtonToggleGroup
           android:id="@+id/external_channel_group"
@@ -98,6 +110,7 @@
           android:layout_height="wrap_content"
           app:singleSelection="true"
           app:selectionRequired="true"
+          app:checkedButton="@+id/btn_select_email"
           android:layoutDirection="ltr"
           android:gravity="center">
 
@@ -107,6 +120,7 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="דוא״ל"
+            android:textAllCaps="false"
             app:icon="@android:drawable/ic_dialog_email"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
@@ -116,6 +130,7 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="WhatsApp"
+            android:textAllCaps="false"
             app:icon="@android:drawable/stat_sys_phone_call"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
@@ -125,32 +140,48 @@
           android:id="@+id/check_send_here"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="שמור ופרסם גם באפליקציה (שלח כאן)"
+          android:text="פרסום כהודעה בלוח המחוונים באפליקציה"
           android:layout_marginTop="12dp"
           android:checked="true"
-          android:textSize="14sp" />
+          android:textSize="13sp" />
 
         <com.google.android.material.button.MaterialButton
           android:id="@+id/send_announcement"
           android:layout_width="match_parent"
-          android:layout_height="56dp"
+          android:layout_height="60dp"
           android:text="שלח הודעה כעת"
           android:layout_marginTop="16dp"
-          app:cornerRadius="28dp"
+          app:cornerRadius="16dp"
           android:textSize="16sp"
           android:textStyle="bold"
+          app:icon="@android:drawable/ic_menu_send"
+          app:iconGravity="textStart"
           style="@style/Widget.MaterialComponents.Button" />
       </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <TextView
-      android:layout_width="wrap_content"
+    <LinearLayout
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:text="היסטוריית הודעות"
-      android:textStyle="bold"
-      android:textSize="18sp"
-      android:textColor="@color/text_primary"
-      android:layout_marginTop="32dp" />
+      android:orientation="horizontal"
+      android:gravity="center_vertical"
+      android:layout_marginTop="32dp">
+
+      <TextView
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:text="הודעות אחרונות ששלחת"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:textColor="@color/text_primary" />
+
+      <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@android:drawable/ic_menu_recent_history"
+        app:tint="@color/text_secondary" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
       android:id="@+id/sent_list"

@@ -45,20 +45,23 @@ public class CommunicationFragment extends Fragment {
     EditText message = view.findViewById(R.id.announcement_message);
     CheckBox checkSendHere = view.findViewById(R.id.check_send_here);
     
-    MaterialButton btnEmail = view.findViewById(R.id.btn_select_email);
-    MaterialButton btnWhatsapp = view.findViewById(R.id.btn_select_whatsapp);
+    MaterialButtonToggleGroup externalGroup = view.findViewById(R.id.external_channel_group);
     MaterialButton btnSendAll = view.findViewById(R.id.send_announcement);
 
-    // לחיצה על כפתור אימייל
-    btnEmail.setOnClickListener(v -> handleSend(title, message, checkSendHere, true, false));
+    // עדכון טקסט הכפתור בהתאם לבחירה ב-ToggleGroup
+    externalGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+        if (isChecked) {
+            if (checkedId == R.id.btn_select_email) {
+                btnSendAll.setText("שלח בדוא״ל כעת");
+            } else if (checkedId == R.id.btn_select_whatsapp) {
+                btnSendAll.setText("שלח ב-WhatsApp");
+            }
+        }
+    });
 
-    // לחיצה על כפתור וואטסאפ
-    btnWhatsapp.setOnClickListener(v -> handleSend(title, message, checkSendHere, false, true));
-
-    // כפתור השליחה הכללי (שולח לפי מה שמסומן ב-ToggleGroup)
+    // כפתור השליחה הראשי
     btnSendAll.setOnClickListener(v -> {
-        MaterialButtonToggleGroup group = view.findViewById(R.id.external_channel_group);
-        int checkedId = group.getCheckedButtonId();
+        int checkedId = externalGroup.getCheckedButtonId();
         handleSend(title, message, checkSendHere, 
                   checkedId == R.id.btn_select_email, 
                   checkedId == R.id.btn_select_whatsapp);
@@ -77,7 +80,7 @@ public class CommunicationFragment extends Fragment {
           return;
       }
 
-      // שליחה פנימית לאפליקציה
+      // שליחה פנימית
       if (internalCheck.isChecked()) {
           viewModel.sendAnnouncement(title, message);
       }
@@ -89,11 +92,9 @@ public class CommunicationFragment extends Fragment {
           viewModel.sendWhatsappToScouts(requireContext(), message);
       }
 
-      // ניקוי שדות רק אם בוצעה שליחה כלשהי
-      if (internalCheck.isChecked() || sendEmail || sendWhatsapp) {
-          titleField.setText("");
-          messageField.setText("");
-          Snackbar.make(requireView(), "הפעולה בוצעה בהצלחה!", Snackbar.LENGTH_SHORT).show();
-      }
+      // ניקוי וסגירה
+      titleField.setText("");
+      messageField.setText("");
+      Snackbar.make(requireView(), "ההודעה בדרך!", Snackbar.LENGTH_SHORT).show();
   }
 }
