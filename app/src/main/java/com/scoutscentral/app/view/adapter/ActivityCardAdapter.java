@@ -1,7 +1,6 @@
 package com.scoutscentral.app.view.adapter;
 
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -10,6 +9,8 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -19,29 +20,36 @@ import com.scoutscentral.app.model.Activity;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
-public class ActivityCardAdapter extends RecyclerView.Adapter<ActivityCardAdapter.ActivityViewHolder> {
+public class ActivityCardAdapter extends ListAdapter<Activity, ActivityCardAdapter.ActivityViewHolder> {
+  
   public interface ActivityActionListener {
     void onAttendance(Activity activity);
     void onDelete(Activity activity);
-    void onImageClick(Activity activity); // Added for gallery access
+    void onImageClick(Activity activity);
   }
 
-  private final List<Activity> items = new ArrayList<>();
   private final ActivityActionListener listener;
 
-  public ActivityCardAdapter(ActivityActionListener listener) {
-    this.listener = listener;
-  }
-
-  public void submitList(List<Activity> activities) {
-    items.clear();
-    if (activities != null) {
-      items.addAll(activities);
+  private static final DiffUtil.ItemCallback<Activity> DIFF_CALLBACK = new DiffUtil.ItemCallback<Activity>() {
+    @Override
+    public boolean areItemsTheSame(@NonNull Activity oldItem, @NonNull Activity newItem) {
+      return Objects.equals(oldItem.getId(), newItem.getId());
     }
-    notifyDataSetChanged();
+
+    @Override
+    public boolean areContentsTheSame(@NonNull Activity oldItem, @NonNull Activity newItem) {
+      return Objects.equals(oldItem.getTitle(), newItem.getTitle()) &&
+             Objects.equals(oldItem.getDate(), newItem.getDate()) &&
+             Objects.equals(oldItem.getDescription(), newItem.getDescription()) &&
+             Objects.equals(oldItem.getImageUrl(), newItem.getImageUrl());
+    }
+  };
+
+  public ActivityCardAdapter(ActivityActionListener listener) {
+    super(DIFF_CALLBACK);
+    this.listener = listener;
   }
 
   @NonNull
@@ -54,7 +62,7 @@ public class ActivityCardAdapter extends RecyclerView.Adapter<ActivityCardAdapte
 
   @Override
   public void onBindViewHolder(@NonNull ActivityViewHolder holder, int position) {
-    Activity activity = items.get(position);
+    Activity activity = getItem(position);
     holder.title.setText(activity.getTitle());
     holder.date.setText(formatDate(activity.getDate()));
     holder.description.setText(activity.getDescription());
@@ -95,11 +103,6 @@ public class ActivityCardAdapter extends RecyclerView.Adapter<ActivityCardAdapte
     } catch (Exception e) {
       return isoDate;
     }
-  }
-
-  @Override
-  public int getItemCount() {
-    return items.size();
   }
 
   static class ActivityViewHolder extends RecyclerView.ViewHolder {
