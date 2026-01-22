@@ -1,8 +1,9 @@
-package com.scoutscentral.app.model.data;
+package com.scoutscentral.app.data;
 
 import static org.junit.Assert.assertEquals;
 
 import com.scoutscentral.app.model.ScoutLevel;
+import com.scoutscentral.app.model.data.SupabaseService;
 
 import org.junit.Before;
 import org.junit.Test;

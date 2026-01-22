@@ -32,6 +32,10 @@ public class CommunicationViewModel extends ViewModel {
     repository.addAnnouncement(title, message);
   }
 
+  public void deleteAllAnnouncements() {
+    repository.deleteAllAnnouncements();
+  }
+
   public void sendEmailToScouts(Context context, String title, String message) {
     List<Scout> scouts = repository.getScouts().getValue();
     if (scouts == null || scouts.isEmpty()) return;

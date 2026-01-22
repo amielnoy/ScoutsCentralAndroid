@@ -165,6 +165,10 @@ public class SupabaseService {
     postJson("/announcements?on_conflict=id", toAnnouncementJson(announcement), true);
   }
 
+    public void deleteAllAnnouncements() throws IOException {
+        executeRequest(requestBuilder("/announcements?id=neq.0").delete().build());
+    }
+
   public void saveAttendance(String activityId, List<String> presentScoutIds) throws IOException {
     executeRequest(requestBuilder("/activity_attendance?activity_id=eq." + activityId).delete().build());
     if (presentScoutIds == null || presentScoutIds.isEmpty()) return;
