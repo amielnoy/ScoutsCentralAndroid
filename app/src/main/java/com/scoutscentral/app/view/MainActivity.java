@@ -85,9 +85,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     } else if (id == R.id.nav_reports) {
       fragment = new ReportsFragment();
       title = getString(R.string.nav_reports);
-    } else if (id == R.id.nav_settings) {
-      fragment = new SettingsFragment();
-      title = getString(R.string.nav_settings);
     } else if (id == R.id.nav_logout) {
       new androidx.appcompat.app.AlertDialog.Builder(this)
         .setTitle("התנתקות")

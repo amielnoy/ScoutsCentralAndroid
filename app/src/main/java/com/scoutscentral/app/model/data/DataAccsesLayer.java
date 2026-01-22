@@ -45,7 +45,7 @@ public class DataAccsesLayer {
     scoutList.add(new Scout("1", "ליאם גרין", "", ScoutLevel.KEFIR,
       "liam.parent@example.com", "טיולים, מחנאות וגילוף בעץ",
       "קשירת קשרים, עזרה ראשונה בסיסית", Arrays.asList("act-1", "act-3")));
-    scoutList.add(new Scout("2", "אוליביה ميدו", "", ScoutLevel.OFER,
+    scoutList.add(new Scout("2", "אוליביה ميدو", "", ScoutLevel.OFER,
       "olivia.parent@example.com", "אפייה, אומנות ויצירה, שירות קהילתי",
       "מכירת עוגיות, הכנת צמידי חברות", Collections.singletonList("act-4")));
     scoutList.add(new Scout("3", "נוח ריבר", "", ScoutLevel.KEFIR,
@@ -117,6 +117,11 @@ public class DataAccsesLayer {
 
   public LiveData<List<Announcement>> getAnnouncements() {
     return announcements;
+  }
+
+  public void deleteAllAnnouncements() {
+    announcements.setValue(new ArrayList<>());
+    runSupabaseTask(() -> supabaseService.deleteAllAnnouncements());
   }
 
   public LiveData<List<AttendanceRecord>> getAttendanceRecords() {

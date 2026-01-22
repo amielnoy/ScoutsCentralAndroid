@@ -9,6 +9,7 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -47,6 +48,19 @@ public class CommunicationFragment extends Fragment {
     
     MaterialButtonToggleGroup externalGroup = view.findViewById(R.id.external_channel_group);
     MaterialButton btnSendAll = view.findViewById(R.id.send_announcement);
+    MaterialButton btnDeleteMessages = view.findViewById(R.id.delete_messages_button);
+
+    btnDeleteMessages.setOnClickListener(v -> {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("מחיקת הודעות")
+                .setMessage("האם למחוק את כל ההודעות שנשלחו? לא ניתן לשחזר פעולה זו.")
+                .setPositiveButton("מחק", (dialog, which) -> {
+                    viewModel.deleteAllAnnouncements();
+                    Snackbar.make(requireView(), "כל ההודעות נמחקו", Snackbar.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("ביטול", null)
+                .show();
+    });
 
     // עדכון טקסט הכפתור בהתאם לבחירה ב-ToggleGroup
     externalGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
