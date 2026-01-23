@@ -1,7 +1,11 @@
 package com.scoutscentral.app.view;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +16,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.DateValidatorPointBackward;
+import com.google.android.material.datepicker.DayViewDecorator;
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.snackbar.Snackbar;
 import com.scoutscentral.app.R;
 import com.scoutscentral.app.model.Activity;
@@ -24,13 +32,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-
-import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.CalendarConstraints;
-import com.google.android.material.datepicker.DateValidatorPointBackward;
 
 public class ActivitiesFragment extends Fragment {
   private ActivitiesViewModel viewModel;
@@ -87,8 +92,11 @@ public class ActivitiesFragment extends Fragment {
         MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
         builder.setTitleText("בחר תאריך לפעולת " + dayName);
         builder.setCalendarConstraints(constraintsBuilder.build());
+        builder.setTheme(R.style.Theme_ScoutsCentral_DatePicker);
         
-        // Removed custom theme to avoid potential crash
+        // Add the decorator to highlight existing activity dates
+        builder.setDayViewDecorator(new ActivityDayDecorator(allActivities));
+        
         final MaterialDatePicker<Long> picker = builder.build();
         
         picker.addOnPositiveButtonClickListener(selection -> {
@@ -185,6 +193,74 @@ public class ActivitiesFragment extends Fragment {
           return LocalDate.parse(isoDate.split("T")[0]).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
       } catch (Exception e) {
           return isoDate;
+      }
+  }
+
+  /**
+   * Decorator to highlight existing activity dates in the MaterialDatePicker.
+   */
+  public static class ActivityDayDecorator extends DayViewDecorator {
+      private final HashSet<String> activityDates;
+
+      public ActivityDayDecorator(List<Activity> activities) {
+          this.activityDates = new HashSet<>();
+          if (activities != null) {
+              for (Activity act : activities) {
+                  if (act.getDate() != null) {
+                      activityDates.add(act.getDate().split("T")[0]);
+                  }
+              }
+          }
+      }
+
+      protected ActivityDayDecorator(Parcel in) {
+          activityDates = new HashSet<>();
+          ArrayList<String> list = in.createStringArrayList();
+          if (list != null) {
+              activityDates.addAll(list);
+          }
+      }
+
+      public static final Creator<ActivityDayDecorator> CREATOR = new Creator<ActivityDayDecorator>() {
+          @Override
+          public ActivityDayDecorator createFromParcel(Parcel in) {
+              return new ActivityDayDecorator(in);
+          }
+
+          @Override
+          public ActivityDayDecorator[] newArray(int size) {
+              return new ActivityDayDecorator[size];
+          }
+      };
+
+      @Override
+      public int describeContents() {
+          return 0;
+      }
+
+      @Override
+      public void writeToParcel(@NonNull Parcel dest, int flags) {
+          dest.writeStringList(new ArrayList<>(activityDates));
+      }
+
+      @Nullable
+      @Override
+      public ColorStateList getBackgroundColor(@NonNull Context context, int year, int month, int day, boolean valid, boolean selected) {
+          String dateKey = String.format(Locale.US, "%04d-%02d-%02d", year, month + 1, day);
+          if (activityDates.contains(dateKey)) {
+              return ColorStateList.valueOf(context.getColor(R.color.primary));
+          }
+          return null;
+      }
+
+      @Nullable
+      @Override
+      public ColorStateList getTextColor(@NonNull Context context, int year, int month, int day, boolean valid, boolean selected) {
+          String dateKey = String.format(Locale.US, "%04d-%02d-%02d", year, month + 1, day);
+          if (activityDates.contains(dateKey)) {
+              return ColorStateList.valueOf(Color.WHITE);
+          }
+          return null;
       }
   }
 }
