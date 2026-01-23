@@ -1,7 +1,7 @@
 <resources>
   <string name="app_name">צופים+</string>
   <string name="nav_home">בית</string>
-  <string name="nav_activities">פעילויות</string>
+  <string name="nav_activities">פעולות השבט</string>
   <string name="nav_members">חניכים</string>
   <string name="nav_profile">פרופיל</string>
   <string name="login">כניסה</string>
