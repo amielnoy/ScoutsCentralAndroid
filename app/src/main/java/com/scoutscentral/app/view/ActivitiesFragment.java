@@ -80,29 +80,35 @@ public class ActivitiesFragment extends Fragment {
   private void showMeetingDatePicker(String dayName, int dayOfWeek) {
     if (!isAdded()) return;
 
-    CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
-    constraintsBuilder.setValidator(DateValidatorPointBackward.before(System.currentTimeMillis()));
+    try {
+        CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
+        constraintsBuilder.setValidator(DateValidatorPointBackward.before(System.currentTimeMillis()));
 
-    MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
-    builder.setTitleText("בחר תאריך לפעולת " + dayName);
-    builder.setCalendarConstraints(constraintsBuilder.build());
-    builder.setTheme(R.style.Theme_ScoutsCentral_DatePicker);
-    
-    final MaterialDatePicker<Long> picker = builder.build();
-    
-    picker.addOnPositiveButtonClickListener(selection -> {
-        Calendar selectedDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        selectedDate.setTimeInMillis(selection);
+        MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
+        builder.setTitleText("בחר תאריך לפעולת " + dayName);
+        builder.setCalendarConstraints(constraintsBuilder.build());
         
-        if (selectedDate.get(Calendar.DAY_OF_WEEK) != dayOfWeek) {
-            Snackbar.make(requireView(), "נא לבחור תאריך שחל ב" + dayName, Snackbar.LENGTH_LONG).show();
-            return;
-        }
+        // Removed custom theme to avoid potential crash
+        final MaterialDatePicker<Long> picker = builder.build();
+        
+        picker.addOnPositiveButtonClickListener(selection -> {
+            if (!isAdded()) return;
+            
+            Calendar selectedDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            selectedDate.setTimeInMillis(selection);
+            
+            if (selectedDate.get(Calendar.DAY_OF_WEEK) != dayOfWeek) {
+                Snackbar.make(requireView(), "נא לבחור תאריך שחל ב" + dayName, Snackbar.LENGTH_LONG).show();
+                return;
+            }
 
-        handleDateSelection(selectedDate, dayName);
-    });
-    
-    picker.show(getChildFragmentManager(), "meeting_picker");
+            handleDateSelection(selectedDate, dayName);
+        });
+        
+        picker.show(getChildFragmentManager(), "meeting_picker");
+    } catch (Exception e) {
+        Snackbar.make(requireView(), "שגיאה בפתיחת לוח השנה", Snackbar.LENGTH_SHORT).show();
+    }
   }
 
   private void handleDateSelection(Calendar calendar, String meetingType) {
@@ -126,7 +132,7 @@ public class ActivitiesFragment extends Fragment {
               .setMessage("לא נמצאה פעולה רשומה לתאריך זה. האם תרצה ליצור פעולה חדשה מסוג " + meetingType + "?")
               .setPositiveButton("צור וסמן נוכחות", (dialog, which) -> {
                   viewModel.addActivity(meetingType, dateStr + "T16:00:00Z", "שבט מוצקין", "פעולה קבועה");
-                  Snackbar.make(requireView(), "פעולה נוצרה. נא לבחור שוב את התאריך לסימון נוכחות.", Snackbar.LENGTH_SHORT).show();
+                  Snackbar.make(requireView(), "פעולה נוצרה. נא לבחור שוב את התאריך.", Snackbar.LENGTH_SHORT).show();
               })
               .setNegativeButton("ביטול", null)
               .show();
@@ -134,6 +140,8 @@ public class ActivitiesFragment extends Fragment {
   }
 
   public void onAttendance(Activity activity) {
+    if (!isAdded()) return;
+    
     List<Scout> scouts = repository.getScouts().getValue();
     if (scouts == null) return;
 
