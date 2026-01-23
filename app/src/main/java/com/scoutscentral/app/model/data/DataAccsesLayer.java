@@ -170,9 +170,14 @@ public class DataAccsesLayer {
     runSupabaseTask(() -> supabaseService.deleteScout(id));
   }
 
-  public void addActivity(String title, String date, String location, String description) {
-    List<Activity> current = new ArrayList<>(activities.getValue());
+  public String addActivity(String title, String date, String location, String description) {
     String id = "act-" + UUID.randomUUID().toString().substring(0, 8);
+    addActivityWithId(id, title, date, location, description);
+    return id;
+  }
+
+  public void addActivityWithId(String id, String title, String date, String location, String description) {
+    List<Activity> current = new ArrayList<>(activities.getValue());
     String imageUrl = getImageUrlForTitle(title);
     Activity newActivity = new Activity(id, title, date, location, new ArrayList<>(), description, imageUrl);
     current.add(0, newActivity);

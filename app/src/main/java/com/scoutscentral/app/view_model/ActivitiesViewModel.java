@@ -15,8 +15,8 @@ public class ActivitiesViewModel extends ViewModel {
     return repository.getActivities();
   }
 
-  public void addActivity(String title, String date, String location, String description) {
-    repository.addActivity(title, date, location, description);
+  public String addActivity(String title, String date, String location, String description) {
+    return repository.addActivity(title, date, location, description);
   }
 
   public void updateActivity(Activity activity) {
