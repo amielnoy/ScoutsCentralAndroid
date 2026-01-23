@@ -161,13 +161,18 @@ public class SupabaseService {
     executeRequest(requestBuilder("/activities?id=eq." + id).delete().build());
   }
 
+  public void deleteAllActivities() throws IOException {
+    executeRequest(requestBuilder("/activities?id=not.is.null").delete().build());
+  }
+
   public void upsertAnnouncement(Announcement announcement) throws IOException {
     postJson("/announcements?on_conflict=id", toAnnouncementJson(announcement), true);
   }
 
-    public void deleteAllAnnouncements() throws IOException {
-        executeRequest(requestBuilder("/announcements?id=neq.0").delete().build());
-    }
+  public void deleteAllAnnouncements() throws IOException {
+    // Using not.is.null ensures all records with an ID are deleted (which should be all records)
+    executeRequest(requestBuilder("/announcements?id=not.is.null").delete().build());
+  }
 
   public void saveAttendance(String activityId, List<String> presentScoutIds) throws IOException {
     executeRequest(requestBuilder("/activity_attendance?activity_id=eq." + activityId).delete().build());

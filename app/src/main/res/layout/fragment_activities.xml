@@ -1,45 +1,145 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:orientation="vertical"
-  android:padding="16dp"
+  android:fillViewport="true"
+  android:background="#F8F9FA"
   android:layoutDirection="rtl">
 
-  <LinearLayout
+  <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical">
+    android:padding="16dp">
 
     <TextView
-      android:layout_width="0dp"
-      android:layout_height="wrap_content"
-      android:layout_weight="1"
-      android:text="תזמון פעילויות"
-      android:textStyle="bold"
-      android:textSize="22sp"
-      android:textColor="@color/text_primary" />
-
-    <com.google.android.material.button.MaterialButton
-      android:id="@+id/add_activity"
+      android:id="@+id/meetings_title"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="הוסף פעילות"
-      style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-  </LinearLayout>
+      android:text="ניהול פעולות השבט"
+      android:textStyle="bold"
+      android:textSize="24sp"
+      android:textColor="#1A1C1E"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintStart_toStartOf="parent" />
 
-  <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="נהל ותזמן את כל פעילויות הצופים."
-    android:textColor="@color/text_secondary"
-    android:layout_marginTop="4dp" />
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/delete_all_activities"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="מחק הכל"
+      style="@style/Widget.MaterialComponents.Button.TextButton"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintEnd_toEndOf="parent" />
 
-  <androidx.recyclerview.widget.RecyclerView
-    android:id="@+id/activity_list"
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_weight="1"
-    android:layout_marginTop="12dp" />
-</LinearLayout>
+    <TextView
+      android:id="@+id/meetings_subtitle"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="בחר סוג פעולה ותאריך לסימון נוכחות"
+      android:textColor="#44474E"
+      android:textSize="14sp"
+      android:layout_marginTop="4dp"
+      app:layout_constraintTop_toBottomOf="@id/meetings_title"
+      app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Tuesday Meeting Card -->
+    <com.google.android.material.card.MaterialCardView
+      android:id="@+id/card_tuesday"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="24dp"
+      app:cardCornerRadius="16dp"
+      app:cardElevation="2dp"
+      app:layout_constraintTop_toBottomOf="@id/meetings_subtitle">
+
+      <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp">
+
+        <ImageView
+          android:id="@+id/icon_tuesday"
+          android:layout_width="48dp"
+          android:layout_height="48dp"
+          android:src="@android:drawable/ic_menu_today"
+          app:tint="@color/primary"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+          android:id="@+id/title_tuesday"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="פעולת יום שלישי"
+          android:textStyle="bold"
+          android:textSize="18sp"
+          android:layout_marginStart="16dp"
+          app:layout_constraintTop_toTopOf="@id/icon_tuesday"
+          app:layout_constraintBottom_toBottomOf="@id/icon_tuesday"
+          app:layout_constraintStart_toEndOf="@id/icon_tuesday" />
+
+        <com.google.android.material.button.MaterialButton
+          android:id="@+id/btn_attendance_tuesday"
+          android:layout_width="match_parent"
+          android:layout_height="56dp"
+          android:text="בחר תאריך וסמן נוכחות"
+          android:layout_marginTop="16dp"
+          app:cornerRadius="12dp"
+          style="@style/Widget.MaterialComponents.Button"
+          app:layout_constraintTop_toBottomOf="@id/icon_tuesday" />
+
+      </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Friday Meeting Card -->
+    <com.google.android.material.card.MaterialCardView
+      android:id="@+id/card_friday"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      app:cardCornerRadius="16dp"
+      app:cardElevation="2dp"
+      app:layout_constraintTop_toBottomOf="@id/card_tuesday">
+
+      <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp">
+
+        <ImageView
+          android:id="@+id/icon_friday"
+          android:layout_width="48dp"
+          android:layout_height="48dp"
+          android:src="@android:drawable/ic_menu_today"
+          app:tint="@color/primary"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+          android:id="@+id/title_friday"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="פעולת יום שישי"
+          android:textStyle="bold"
+          android:textSize="18sp"
+          android:layout_marginStart="16dp"
+          app:layout_constraintTop_toTopOf="@id/icon_friday"
+          app:layout_constraintBottom_toBottomOf="@id/icon_friday"
+          app:layout_constraintStart_toEndOf="@id/icon_friday" />
+
+        <com.google.android.material.button.MaterialButton
+          android:id="@+id/btn_attendance_friday"
+          android:layout_width="match_parent"
+          android:layout_height="56dp"
+          android:text="בחר תאריך וסמן נוכחות"
+          android:layout_marginTop="16dp"
+          app:cornerRadius="12dp"
+          style="@style/Widget.MaterialComponents.Button"
+          app:layout_constraintTop_toBottomOf="@id/icon_friday" />
+
+      </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

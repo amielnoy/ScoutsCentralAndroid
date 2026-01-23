@@ -26,4 +26,8 @@ public class ActivitiesViewModel extends ViewModel {
   public void deleteActivity(String id) {
     repository.deleteActivity(id);
   }
+
+  public void deleteAllActivities() {
+    repository.deleteAllActivities();
+  }
 }
