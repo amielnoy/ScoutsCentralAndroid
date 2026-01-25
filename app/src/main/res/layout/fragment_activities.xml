@@ -10,61 +10,69 @@
   <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp">
+    android:padding="20dp">
 
+    <!-- Header Section -->
     <TextView
       android:id="@+id/meetings_title"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:text="ניהול פעולות השבט"
+      android:textSize="28sp"
       android:textStyle="bold"
-      android:textSize="24sp"
       android:textColor="#1A1C1E"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+      android:id="@+id/meetings_subtitle"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:text="בחרו סוג פעולה ותאריך כדי לתעד נוכחות או לתכנן קדימה"
+      android:textColor="#44474E"
+      android:textSize="14sp"
+      android:layout_marginTop="6dp"
+      app:layout_constraintTop_toBottomOf="@id/meetings_title"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toStartOf="@id/delete_all_activities" />
 
     <com.google.android.material.button.MaterialButton
       android:id="@+id/delete_all_activities"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="מחק הכל"
+      android:text="איפוס"
+      android:textColor="#BA1A1A"
+      app:icon="@android:drawable/ic_menu_delete"
+      app:iconTint="#BA1A1A"
       style="@style/Widget.MaterialComponents.Button.TextButton"
-      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintTop_toTopOf="@id/meetings_title"
+      app:layout_constraintBottom_toBottomOf="@id/meetings_title"
       app:layout_constraintEnd_toEndOf="parent" />
-
-    <TextView
-      android:id="@+id/meetings_subtitle"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="בחר סוג פעולה ותאריך לסימון נוכחות"
-      android:textColor="#44474E"
-      android:textSize="14sp"
-      android:layout_marginTop="4dp"
-      app:layout_constraintTop_toBottomOf="@id/meetings_title"
-      app:layout_constraintStart_toStartOf="parent" />
 
     <!-- Tuesday Meeting Card -->
     <com.google.android.material.card.MaterialCardView
       android:id="@+id/card_tuesday"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginTop="24dp"
-      app:cardCornerRadius="16dp"
-      app:cardElevation="2dp"
+      android:layout_marginTop="32dp"
+      app:cardCornerRadius="24dp"
+      app:cardElevation="0dp"
+      app:strokeWidth="1dp"
+      app:strokeColor="#E1E2E9"
       app:layout_constraintTop_toBottomOf="@id/meetings_subtitle">
 
       <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp">
+        android:padding="24dp">
 
-        <ImageView
-          android:id="@+id/icon_tuesday"
-          android:layout_width="48dp"
-          android:layout_height="48dp"
-          android:src="@android:drawable/ic_menu_today"
-          app:tint="@color/primary"
-          app:layout_constraintTop_toTopOf="parent"
+        <View
+          android:id="@+id/indicator_tuesday"
+          android:layout_width="4dp"
+          android:layout_height="0dp"
+          android:background="#3F51B5"
+          app:layout_constraintTop_toTopOf="@id/title_tuesday"
+          app:layout_constraintBottom_toBottomOf="@id/subtitle_tuesday"
           app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
@@ -73,21 +81,46 @@
           android:layout_height="wrap_content"
           android:text="פעולת יום שלישי"
           android:textStyle="bold"
-          android:textSize="18sp"
+          android:textSize="20sp"
+          android:textColor="#1A1C1E"
           android:layout_marginStart="16dp"
-          app:layout_constraintTop_toTopOf="@id/icon_tuesday"
-          app:layout_constraintBottom_toBottomOf="@id/icon_tuesday"
-          app:layout_constraintStart_toEndOf="@id/icon_tuesday" />
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintStart_toEndOf="@id/indicator_tuesday" />
+
+        <TextView
+          android:id="@+id/subtitle_tuesday"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="הדרכה שבועית ומיומנויות שדה"
+          android:textColor="#44474E"
+          android:textSize="14sp"
+          android:layout_marginTop="2dp"
+          android:layout_marginStart="16dp"
+          app:layout_constraintTop_toBottomOf="@id/title_tuesday"
+          app:layout_constraintStart_toEndOf="@id/indicator_tuesday" />
+
+        <ImageView
+          android:layout_width="48dp"
+          android:layout_height="48dp"
+          android:src="@android:drawable/ic_menu_today"
+          app:tint="#3F51B5"
+          android:alpha="0.1"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintEnd_toEndOf="parent" />
 
         <com.google.android.material.button.MaterialButton
           android:id="@+id/btn_attendance_tuesday"
           android:layout_width="match_parent"
           android:layout_height="56dp"
-          android:text="בחר תאריך וסמן נוכחות"
-          android:layout_marginTop="16dp"
-          app:cornerRadius="12dp"
+          android:text="בחירת תאריך וסימון נוכחות"
+          android:layout_marginTop="24dp"
+          app:cornerRadius="16dp"
+          android:insetTop="0dp"
+          android:insetBottom="0dp"
+          app:backgroundTint="#3F51B5"
+          app:icon="@android:drawable/ic_menu_edit"
           style="@style/Widget.MaterialComponents.Button"
-          app:layout_constraintTop_toBottomOf="@id/icon_tuesday" />
+          app:layout_constraintTop_toBottomOf="@id/subtitle_tuesday" />
 
       </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
@@ -98,22 +131,24 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="16dp"
-      app:cardCornerRadius="16dp"
-      app:cardElevation="2dp"
+      app:cardCornerRadius="24dp"
+      app:cardElevation="0dp"
+      app:strokeWidth="1dp"
+      app:strokeColor="#E1E2E9"
       app:layout_constraintTop_toBottomOf="@id/card_tuesday">
 
       <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp">
+        android:padding="24dp">
 
-        <ImageView
-          android:id="@+id/icon_friday"
-          android:layout_width="48dp"
-          android:layout_height="48dp"
-          android:src="@android:drawable/ic_menu_today"
-          app:tint="@color/primary"
-          app:layout_constraintTop_toTopOf="parent"
+        <View
+          android:id="@+id/indicator_friday"
+          android:layout_width="4dp"
+          android:layout_height="0dp"
+          android:background="#FF5722"
+          app:layout_constraintTop_toTopOf="@id/title_friday"
+          app:layout_constraintBottom_toBottomOf="@id/subtitle_friday"
           app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
@@ -122,24 +157,54 @@
           android:layout_height="wrap_content"
           android:text="פעולת יום שישי"
           android:textStyle="bold"
-          android:textSize="18sp"
+          android:textSize="20sp"
+          android:textColor="#1A1C1E"
           android:layout_marginStart="16dp"
-          app:layout_constraintTop_toTopOf="@id/icon_friday"
-          app:layout_constraintBottom_toBottomOf="@id/icon_friday"
-          app:layout_constraintStart_toEndOf="@id/icon_friday" />
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintStart_toEndOf="@id/indicator_friday" />
+
+        <TextView
+          android:id="@+id/subtitle_friday"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="פעילות חברתית וערכי צופיות"
+          android:textColor="#44474E"
+          android:textSize="14sp"
+          android:layout_marginTop="2dp"
+          android:layout_marginStart="16dp"
+          app:layout_constraintTop_toBottomOf="@id/title_friday"
+          app:layout_constraintStart_toEndOf="@id/indicator_friday" />
+
+        <ImageView
+          android:layout_width="48dp"
+          android:layout_height="48dp"
+          android:src="@android:drawable/ic_menu_today"
+          app:tint="#FF5722"
+          android:alpha="0.1"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintEnd_toEndOf="parent" />
 
         <com.google.android.material.button.MaterialButton
           android:id="@+id/btn_attendance_friday"
           android:layout_width="match_parent"
           android:layout_height="56dp"
-          android:text="בחר תאריך וסמן נוכחות"
-          android:layout_marginTop="16dp"
-          app:cornerRadius="12dp"
+          android:text="בחירת תאריך וסימון נוכחות"
+          android:layout_marginTop="24dp"
+          app:cornerRadius="16dp"
+          android:insetTop="0dp"
+          android:insetBottom="0dp"
+          app:backgroundTint="#FF5722"
+          app:icon="@android:drawable/ic_menu_edit"
           style="@style/Widget.MaterialComponents.Button"
-          app:layout_constraintTop_toBottomOf="@id/icon_friday" />
+          app:layout_constraintTop_toBottomOf="@id/subtitle_friday" />
 
       </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
+
+    <View
+      android:layout_width="match_parent"
+      android:layout_height="40dp"
+      app:layout_constraintTop_toBottomOf="@id/card_friday" />
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
