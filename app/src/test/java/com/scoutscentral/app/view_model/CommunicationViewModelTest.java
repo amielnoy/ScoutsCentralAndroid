@@ -13,7 +13,6 @@ import androidx.core.content.IntentCompat;
 import androidx.lifecycle.MutableLiveData;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.model.ScoutLevel;
 import com.scoutscentral.app.model.data.DataAccsesLayer;
 

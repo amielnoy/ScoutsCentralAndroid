@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.scoutscentral.app.model.data.DataAccsesLayer;
 import com.scoutscentral.app.model.Scout;
+import com.scoutscentral.app.model.data.DataAccsesLayer;
 import com.scoutscentral.app.model.data.GeminiService;
 
 import java.util.List;

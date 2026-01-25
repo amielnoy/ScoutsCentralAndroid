@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel;
 
 import com.scoutscentral.app.model.Activity;
 import com.scoutscentral.app.model.Announcement;
-import com.scoutscentral.app.model.data.DataAccsesLayer;
 import com.scoutscentral.app.model.Scout;
+import com.scoutscentral.app.model.data.DataAccsesLayer;
 
 import java.util.List;
 

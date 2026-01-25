@@ -170,7 +170,6 @@ public class SupabaseService {
   }
 
   public void deleteAllAnnouncements() throws IOException {
-    // Using not.is.null ensures all records with an ID are deleted (which should be all records)
     executeRequest(requestBuilder("/announcements?id=not.is.null").delete().build());
   }
 

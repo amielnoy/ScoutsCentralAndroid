@@ -3,9 +3,9 @@ package com.scoutscentral.app.view_model;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.scoutscentral.app.model.data.DataAccsesLayer;
 import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.model.ScoutLevel;
+import com.scoutscentral.app.model.data.DataAccsesLayer;
 
 import java.util.List;
 

@@ -33,7 +33,6 @@ import java.util.*
 
 class ActivitiesFragment : Fragment() {
     private lateinit var viewModel: ActivitiesViewModel
-    private val repository = DataAccsesLayer.getInstance()
     private var allActivities: List<ScoutActivity> = emptyList()
     private lateinit var listAdapter: ActivityRowAdapter
 
@@ -48,8 +47,8 @@ class ActivitiesFragment : Fragment() {
         // Setup the list of scheduled activities
         listAdapter = ActivityRowAdapter()
         val recyclerView = view.findViewById<RecyclerView>(R.id.activities_list_full)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = listAdapter
+        recyclerView?.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView?.adapter = listAdapter
 
         val btnTuesday = view.findViewById<View>(R.id.btn_attendance_tuesday)
         val btnFriday = view.findViewById<View>(R.id.btn_attendance_friday)
@@ -63,7 +62,7 @@ class ActivitiesFragment : Fragment() {
             AlertDialog.Builder(requireContext())
                 .setTitle("מחיקת כל הפעילויות")
                 .setMessage("האם למחוק את כל הפעילויות? פעולה זו תמחק גם את הנתונים מהענן.")
-                .setPositiveButton("מחק הכל") { _, _ ->
+                .setPositiveButton("מחק הכל") { dialog, which ->
                     viewModel.deleteAllActivities()
                     Snackbar.make(requireView(), "כל הפעילויות נמחקו", Snackbar.LENGTH_SHORT).show()
                 }
@@ -93,7 +92,7 @@ class ActivitiesFragment : Fragment() {
                 builder.setTheme(R.style.Theme_ScoutsCentral_DatePicker)
             } catch (ignored: Exception) {}
 
-            val dates = allActivities.mapNotNull { it.date.split("T").getOrNull(0) }
+            val dates = allActivities.mapNotNull { activity -> activity.date.split("T").getOrNull(0) }
             val highlightColor = ContextCompat.getColor(requireContext(), R.color.primary)
             
             builder.setDayViewDecorator(ActivityDayDecorator(ArrayList(dates), highlightColor))
@@ -128,7 +127,7 @@ class ActivitiesFragment : Fragment() {
         }
         val dateStr = sdf.format(calendar.time)
 
-        val existing = allActivities.find { it.date.startsWith(dateStr) }
+        val existing = allActivities.find { activity -> activity.date.startsWith(dateStr) }
 
         if (existing != null) {
             onAttendance(existing)
@@ -148,7 +147,7 @@ class ActivitiesFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setTitle("פרטי פעולה חדשה")
             .setView(dialogView)
-            .setPositiveButton("המשך") { _, _ ->
+            .setPositiveButton("המשך") { dialog, which ->
                 val title = titleInput.text.toString().trim()
                 val description = descInput.text.toString().trim()
                 
@@ -166,25 +165,26 @@ class ActivitiesFragment : Fragment() {
     private fun showNewActivityAttendanceDialog(title: String, description: String, isoDate: String) {
         if (!isAdded) return
 
+        val repository = DataAccsesLayer.getInstance()
         val scouts = (repository?.scouts?.value as? List<ScoutModel>) ?: return
         if (scouts.isEmpty()) {
             Snackbar.make(requireView(), "לא נמצאו חניכים במערכת", Snackbar.LENGTH_SHORT).show()
             return
         }
 
-        val names = scouts.map { it.name }.toTypedArray()
+        val names = scouts.map { scoutModel -> scoutModel.name }.toTypedArray()
         val checked = BooleanArray(scouts.size) { false }
 
         AlertDialog.Builder(requireContext())
             .setTitle("סימון נוכחות - $title")
-            .setMultiChoiceItems(names, checked) { _, which, isChecked ->
+            .setMultiChoiceItems(names, checked) { dialog, which, isChecked ->
                 checked[which] = isChecked
             }
-            .setPositiveButton("שמור") { _, _ ->
+            .setPositiveButton("שמור") { dialog, which ->
                 val activityId = viewModel.addActivity(title, isoDate, "שבט מוצקין", description)
-                val presentIds = scouts.filterIndexed { index, _ -> checked[index] }.map { it.id }
+                val presentIds = scouts.filterIndexed { index, _ -> checked[index] }.map { scoutModel -> scoutModel.id }
                 if (presentIds.isNotEmpty()) {
-                    repository?.saveAttendance(activityId, presentIds)
+                    repository.saveAttendance(activityId, presentIds)
                 }
                 Snackbar.make(requireView(), "פעולה ונוכחות נשמרו בהצלחה", Snackbar.LENGTH_SHORT).show()
             }
@@ -194,26 +194,27 @@ class ActivitiesFragment : Fragment() {
 
     private fun onAttendance(scoutActivity: ScoutActivity) {
         if (!isAdded) return
-        val scouts = (repository?.scouts?.value as? List<ScoutModel>) ?: return
+        val repository = DataAccsesLayer.getInstance()
+        val scouts = (repository.scouts.value as? List<ScoutModel>) ?: return
         val loading = Snackbar.make(requireView(), "טוען נוכחות...", Snackbar.LENGTH_INDEFINITE)
         loading.show()
 
         Thread {
-            val presentIds = repository?.fetchAttendanceForActivity(scoutActivity.id) ?: emptyList()
-            val names = scouts.map { it.name }.toTypedArray()
-            val checked = BooleanArray(scouts.size) { presentIds.contains(scouts[it].id) }
+            val presentIds = repository.fetchAttendanceForActivity(scoutActivity.id) ?: emptyList()
+            val names = scouts.map { scoutModel -> scoutModel.name }.toTypedArray()
+            val checked = BooleanArray(scouts.size) { index -> presentIds.contains(scouts[index].id) }
 
-            requireActivity().runOnUiThread {
+            activity?.runOnUiThread {
                 if (!isAdded) return@runOnUiThread
                 loading.dismiss()
                 AlertDialog.Builder(requireContext())
                     .setTitle("נוכחות - ${scoutActivity.title} (${formatDate(scoutActivity.date)})")
-                    .setMultiChoiceItems(names, checked) { _, which, isChecked ->
+                    .setMultiChoiceItems(names, checked) { dialog, which, isChecked ->
                         checked[which] = isChecked
                     }
-                    .setPositiveButton("שמור") { _, _ ->
-                        val updatedIds = scouts.filterIndexed { index, _ -> checked[index] }.map { it.id }
-                        repository?.saveAttendance(scoutActivity.id, updatedIds)
+                    .setPositiveButton("שמור") { dialog, which ->
+                        val updatedIds = scouts.filterIndexed { index, _ -> checked[index] }.map { scoutModel -> scoutModel.id }
+                        repository.saveAttendance(scoutActivity.id, updatedIds)
                         Snackbar.make(requireView(), "נוכחות נשמרה", Snackbar.LENGTH_SHORT).show()
                     }
                     .setNegativeButton("ביטול", null)
@@ -233,7 +234,7 @@ class ActivitiesFragment : Fragment() {
 }
 
 /**
- * Robust DayViewDecorator with manual Parcelable implementation to prevent crashes.
+ * Robust manual Parcelable DayViewDecorator matching Material 1.13.0 API.
  */
 class ActivityDayDecorator(
     private val activityDates: ArrayList<String>,

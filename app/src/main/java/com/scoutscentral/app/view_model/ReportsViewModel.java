@@ -10,8 +10,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.scoutscentral.app.model.AttendanceRecord;
-import com.scoutscentral.app.model.data.DataAccsesLayer;
 import com.scoutscentral.app.model.Scout;
+import com.scoutscentral.app.model.data.DataAccsesLayer;
 
 import java.util.List;
 
