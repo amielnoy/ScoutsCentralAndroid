@@ -25,7 +25,6 @@ import com.scoutscentral.app.model.Scout as ScoutModel
 import com.scoutscentral.app.model.data.DataAccsesLayer
 import com.scoutscentral.app.view.adapter.ActivityRowAdapter
 import com.scoutscentral.app.view_model.ActivitiesViewModel
-import kotlinx.parcelize.Parcelize
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -62,7 +61,7 @@ class ActivitiesFragment : Fragment() {
             AlertDialog.Builder(requireContext())
                 .setTitle("מחיקת כל הפעילויות")
                 .setMessage("האם למחוק את כל הפעילויות? פעולה זו תמחק גם את הנתונים מהענן.")
-                .setPositiveButton("מחק הכל") { dialog, which ->
+                .setPositiveButton("מחק הכל") { _, _ ->
                     viewModel.deleteAllActivities()
                     Snackbar.make(requireView(), "כל הפעילויות נמחקו", Snackbar.LENGTH_SHORT).show()
                 }
@@ -71,7 +70,7 @@ class ActivitiesFragment : Fragment() {
         }
 
         viewModel.activities.observe(viewLifecycleOwner) { activities ->
-            val list = (activities as? List<ScoutActivity>) ?: emptyList()
+            val list = activities ?: emptyList()
             allActivities = list
             listAdapter.submitList(list)
         }
@@ -90,9 +89,11 @@ class ActivitiesFragment : Fragment() {
             
             try {
                 builder.setTheme(R.style.Theme_ScoutsCentral_DatePicker)
-            } catch (ignored: Exception) {}
+            } catch (ignored: Exception) {
+                Snackbar.make(requireView(), "שגיאה בפתיחת לוח השנה", Snackbar.LENGTH_SHORT).show()
+            }
 
-            val dates = allActivities.mapNotNull { activity -> activity.date.split("T").getOrNull(0) }
+            val dates = allActivities.mapNotNull { it.date.split("T").getOrNull(0) }
             val highlightColor = ContextCompat.getColor(requireContext(), R.color.primary)
             
             builder.setDayViewDecorator(ActivityDayDecorator(ArrayList(dates), highlightColor))
@@ -115,7 +116,7 @@ class ActivitiesFragment : Fragment() {
 
             picker.show(childFragmentManager, tag)
         } catch (e: Exception) {
-            Snackbar.make(requireView(), "שגיאה בפתיחת לוח השנה", Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(requireView(), "שגיאה בתצורת ה-datepicker", Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -127,7 +128,7 @@ class ActivitiesFragment : Fragment() {
         }
         val dateStr = sdf.format(calendar.time)
 
-        val existing = allActivities.find { activity -> activity.date.startsWith(dateStr) }
+        val existing = allActivities.find { it.date.startsWith(dateStr) }
 
         if (existing != null) {
             onAttendance(existing)
@@ -147,7 +148,7 @@ class ActivitiesFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setTitle("פרטי פעולה חדשה")
             .setView(dialogView)
-            .setPositiveButton("המשך") { dialog, which ->
+            .setPositiveButton("המשך") { _, _ ->
                 val title = titleInput.text.toString().trim()
                 val description = descInput.text.toString().trim()
                 
@@ -165,26 +166,25 @@ class ActivitiesFragment : Fragment() {
     private fun showNewActivityAttendanceDialog(title: String, description: String, isoDate: String) {
         if (!isAdded) return
 
-        val repository = DataAccsesLayer.getInstance()
-        val scouts = (repository?.scouts?.value as? List<ScoutModel>) ?: return
+        val scouts = (DataAccsesLayer.getInstance().scouts.value as? List<ScoutModel>) ?: return
         if (scouts.isEmpty()) {
             Snackbar.make(requireView(), "לא נמצאו חניכים במערכת", Snackbar.LENGTH_SHORT).show()
             return
         }
 
-        val names = scouts.map { scoutModel -> scoutModel.name }.toTypedArray()
+        val names = scouts.map { it.name }.toTypedArray()
         val checked = BooleanArray(scouts.size) { false }
 
         AlertDialog.Builder(requireContext())
             .setTitle("סימון נוכחות - $title")
-            .setMultiChoiceItems(names, checked) { dialog, which, isChecked ->
+            .setMultiChoiceItems(names, checked) { _, which, isChecked ->
                 checked[which] = isChecked
             }
-            .setPositiveButton("שמור") { dialog, which ->
+            .setPositiveButton("שמור") { _, _ ->
                 val activityId = viewModel.addActivity(title, isoDate, "שבט מוצקין", description)
-                val presentIds = scouts.filterIndexed { index, _ -> checked[index] }.map { scoutModel -> scoutModel.id }
+                val presentIds = scouts.filterIndexed { index, _ -> checked[index] }.map { it.id }
                 if (presentIds.isNotEmpty()) {
-                    repository.saveAttendance(activityId, presentIds)
+                    DataAccsesLayer.getInstance().saveAttendance(activityId, presentIds)
                 }
                 Snackbar.make(requireView(), "פעולה ונוכחות נשמרו בהצלחה", Snackbar.LENGTH_SHORT).show()
             }
@@ -194,27 +194,26 @@ class ActivitiesFragment : Fragment() {
 
     private fun onAttendance(scoutActivity: ScoutActivity) {
         if (!isAdded) return
-        val repository = DataAccsesLayer.getInstance()
-        val scouts = (repository.scouts.value as? List<ScoutModel>) ?: return
+        val scouts = (DataAccsesLayer.getInstance().scouts.value as? List<ScoutModel>) ?: return
         val loading = Snackbar.make(requireView(), "טוען נוכחות...", Snackbar.LENGTH_INDEFINITE)
         loading.show()
 
         Thread {
-            val presentIds = repository.fetchAttendanceForActivity(scoutActivity.id) ?: emptyList()
-            val names = scouts.map { scoutModel -> scoutModel.name }.toTypedArray()
-            val checked = BooleanArray(scouts.size) { index -> presentIds.contains(scouts[index].id) }
+            val presentIds = DataAccsesLayer.getInstance().fetchAttendanceForActivity(scoutActivity.id) ?: emptyList()
+            val names = scouts.map { it.name }.toTypedArray()
+            val checked = BooleanArray(scouts.size) { presentIds.contains(scouts[it].id) }
 
             activity?.runOnUiThread {
                 if (!isAdded) return@runOnUiThread
                 loading.dismiss()
                 AlertDialog.Builder(requireContext())
                     .setTitle("נוכחות - ${scoutActivity.title} (${formatDate(scoutActivity.date)})")
-                    .setMultiChoiceItems(names, checked) { dialog, which, isChecked ->
+                    .setMultiChoiceItems(names, checked) { _, which, isChecked ->
                         checked[which] = isChecked
                     }
-                    .setPositiveButton("שמור") { dialog, which ->
-                        val updatedIds = scouts.filterIndexed { index, _ -> checked[index] }.map { scoutModel -> scoutModel.id }
-                        repository.saveAttendance(scoutActivity.id, updatedIds)
+                    .setPositiveButton("שמור") { _, _ ->
+                        val updatedIds = scouts.filterIndexed { index, _ -> checked[index] }.map { it.id }
+                        DataAccsesLayer.getInstance().saveAttendance(scoutActivity.id, updatedIds)
                         Snackbar.make(requireView(), "נוכחות נשמרה", Snackbar.LENGTH_SHORT).show()
                     }
                     .setNegativeButton("ביטול", null)
@@ -241,13 +240,13 @@ class ActivityDayDecorator(
     @ColorInt private val highlightColor: Int
 ) : DayViewDecorator(), Parcelable {
 
-    override fun getBackgroundColor(context: Context, year: Int, month: Int, day: Int, valid: Boolean, selected: Boolean): ColorStateList? {
-        val dateKey = String.format(Locale.US, "%04d-%02d-%02d", year, month + 1, day)
+    override fun getBackgroundColor(p0: Context, p1: Int, p2: Int, p3: Int, p4: Boolean, p5: Boolean): ColorStateList? {
+        val dateKey = String.format(Locale.US, "%04d-%02d-%02d", p1, p2 + 1, p3)
         return if (activityDates.contains(dateKey)) ColorStateList.valueOf(highlightColor) else null
     }
 
-    override fun getTextColor(context: Context, year: Int, month: Int, day: Int, valid: Boolean, selected: Boolean): ColorStateList? {
-        val dateKey = String.format(Locale.US, "%04d-%02d-%02d", year, month + 1, day)
+    override fun getTextColor(p0: Context, p1: Int, p2: Int, p3: Int, p4: Boolean, p5: Boolean): ColorStateList? {
+        val dateKey = String.format(Locale.US, "%04d-%02d-%02d", p1, p2 + 1, p3)
         return if (activityDates.contains(dateKey)) ColorStateList.valueOf(Color.WHITE) else null
     }
 

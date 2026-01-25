@@ -13,7 +13,9 @@ import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.model.ScoutLevel;
 
 import java.io.IOException;
+import java.time.DayOfWeek;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -191,17 +193,23 @@ public class SupabaseService {
     JsonArray activitiesJson = getJsonArray("/activities?select=id,title,date");
     JsonArray attendanceJson = getJsonArray("/activity_attendance?select=activity_id,scout_id");
 
-    List<ActivityMeta> activities = new ArrayList<>();
+    List<ActivityMeta> validActivities = new ArrayList<>();
     for (JsonElement element : activitiesJson) {
       JsonObject row = element.getAsJsonObject();
       String id = getString(row, "id");
       String title = getString(row, "title");
       String dateRaw = getString(row, "date");
-      Instant date = null;
+      
       if (dateRaw != null && !dateRaw.isEmpty()) {
-        try { date = Instant.parse(dateRaw); } catch (Exception ignored) {}
+        try {
+          ZonedDateTime zdt = ZonedDateTime.parse(dateRaw);
+          DayOfWeek dow = zdt.getDayOfWeek();
+          // סינון: רק יום שלישי או שישי
+          if (dow == DayOfWeek.TUESDAY || dow == DayOfWeek.FRIDAY) {
+            validActivities.add(new ActivityMeta(id, title != null ? title : id, zdt.toInstant()));
+          }
+        } catch (Exception ignored) {}
       }
-      if (id != null) activities.add(new ActivityMeta(id, title != null ? title : id, date));
     }
 
     Map<String, Integer> counts = new HashMap<>();
@@ -211,19 +219,23 @@ public class SupabaseService {
       if (activityId != null) counts.put(activityId, counts.getOrDefault(activityId, 0) + 1);
     }
 
-    activities.sort((a, b) -> {
-      if (a.date == null && b.date == null) return 0;
-      if (a.date == null) return 1;
-      if (b.date == null) return -1;
+    // מיון לפי תאריך מהכי חדש להכי ישן
+    validActivities.sort((a, b) -> {
+      if (a.date == null || b.date == null) return 0;
       return b.date.compareTo(a.date);
     });
 
     List<AttendanceRecord> records = new ArrayList<>();
-    int limit = Math.min(5, activities.size());
+    // הגבלה ל-5 הפעילויות האחרונות
+    int limit = Math.min(5, validActivities.size());
     for (int i = 0; i < limit; i++) {
-      ActivityMeta meta = activities.get(i);
+      ActivityMeta meta = validActivities.get(i);
       records.add(new AttendanceRecord(meta.title, counts.getOrDefault(meta.id, 0)));
     }
+    
+    // הפיכת הסדר חזרה כדי שהגרף יוצג משמאל לימין (מישן לחדש)
+    java.util.Collections.reverse(records);
+    
     return records;
   }
 
