@@ -71,7 +71,7 @@ class ActivitiesFragment : Fragment() {
 
         try {
             val constraintsBuilder = CalendarConstraints.Builder()
-            constraintsBuilder.setValidator(DateValidatorPointBackward.before(MaterialDatePicker.todayInUtcMilliseconds()))
+            //constraintsBuilder.setValidator(DateValidatorPointBackward.before(MaterialDatePicker.todayInUtcMilliseconds()))
 
             val builder = MaterialDatePicker.Builder.datePicker()
             builder.setTitleText("בחר תאריך לפעולת $dayName")
