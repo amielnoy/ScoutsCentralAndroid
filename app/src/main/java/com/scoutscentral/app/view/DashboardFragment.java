@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.scoutscentral.app.R;
@@ -43,7 +44,8 @@ public class DashboardFragment extends Fragment {
     announcementAdapter = new AnnouncementAdapter();
 
     androidx.recyclerview.widget.RecyclerView upcoming = view.findViewById(R.id.upcoming_list);
-    upcoming.setLayoutManager(new LinearLayoutManager(getContext()));
+    // Changed from LinearLayoutManager to GridLayoutManager with 2 columns
+    upcoming.setLayoutManager(new GridLayoutManager(getContext(), 2));
     upcoming.setAdapter(activityAdapter);
 
     androidx.recyclerview.widget.RecyclerView announcements = view.findViewById(R.id.announcement_list);

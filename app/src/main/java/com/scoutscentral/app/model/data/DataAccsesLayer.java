@@ -16,6 +16,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -165,7 +166,9 @@ public class DataAccsesLayer {
     
     // Only add to local LiveData if it matches Tuesday or Friday
     if (isTuesdayOrFriday(date)) {
-        current.add(0, newActivity);
+        current.add(newActivity);
+        // Sort after adding new
+        current.sort(Comparator.comparing(Activity::getDate));
         activities.setValue(current);
     }
     runSupabaseTask(() -> supabaseService.upsertActivity(newActivity));
@@ -179,6 +182,7 @@ public class DataAccsesLayer {
         break;
       }
     }
+    current.sort(Comparator.comparing(Activity::getDate));
     activities.setValue(current);
     runSupabaseTask(() -> supabaseService.upsertActivity(updated));
   }
@@ -253,10 +257,11 @@ public class DataAccsesLayer {
 
         List<Activity> remoteActivities = supabaseService.fetchActivities();
         if (remoteActivities != null && !remoteActivities.isEmpty()) {
-            List<Activity> filtered = remoteActivities.stream()
+            List<Activity> filteredAndSorted = remoteActivities.stream()
                 .filter(act -> isTuesdayOrFriday(act.getDate()))
+                .sorted(Comparator.comparing(Activity::getDate))
                 .collect(Collectors.toList());
-            activities.postValue(filtered);
+            activities.postValue(filteredAndSorted);
         } else {
             supabaseService.syncActivities(activities.getValue());
         }
