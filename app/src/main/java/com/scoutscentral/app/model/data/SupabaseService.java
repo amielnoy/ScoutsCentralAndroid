@@ -15,7 +15,9 @@ import com.scoutscentral.app.model.ScoutLevel;
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -228,9 +230,12 @@ public class SupabaseService {
     List<AttendanceRecord> records = new ArrayList<>();
     // הגבלה ל-5 הפעילויות האחרונות
     int limit = Math.min(5, validActivities.size());
+    DateTimeFormatter shortDateFormatter = DateTimeFormatter.ofPattern("dd/MM").withZone(ZoneId.of("UTC"));
+    
     for (int i = 0; i < limit; i++) {
       ActivityMeta meta = validActivities.get(i);
-      records.add(new AttendanceRecord(meta.title, counts.getOrDefault(meta.id, 0)));
+      String dateStr = meta.date != null ? shortDateFormatter.format(meta.date) : "";
+      records.add(new AttendanceRecord(meta.title, dateStr, counts.getOrDefault(meta.id, 0)));
     }
     
     // הפיכת הסדר חזרה כדי שהגרף יוצג משמאל לימין (מישן לחדש)

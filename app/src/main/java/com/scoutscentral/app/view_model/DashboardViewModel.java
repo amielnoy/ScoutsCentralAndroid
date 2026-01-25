@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.scoutscentral.app.model.Activity;
 import com.scoutscentral.app.model.Announcement;
+import com.scoutscentral.app.model.AttendanceRecord;
 import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.model.data.DataAccsesLayer;
 
@@ -23,6 +24,10 @@ public class DashboardViewModel extends ViewModel {
 
   public LiveData<List<Announcement>> getAnnouncements() {
     return repository.getAnnouncements();
+  }
+
+  public LiveData<List<AttendanceRecord>> getAttendanceRecords() {
+    return repository.getAttendanceRecords();
   }
 
   public LiveData<Long> getSyncCompletedAt() {

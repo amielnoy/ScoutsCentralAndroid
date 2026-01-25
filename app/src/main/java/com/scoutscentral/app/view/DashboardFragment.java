@@ -1,5 +1,6 @@
 package com.scoutscentral.app.view;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,19 +15,28 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.scoutscentral.app.R;
 import com.scoutscentral.app.model.Activity;
+import com.scoutscentral.app.model.AttendanceRecord;
 import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.view.adapter.ActivityRowAdapter;
 import com.scoutscentral.app.view.adapter.AnnouncementAdapter;
 import com.scoutscentral.app.view_model.DashboardViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DashboardFragment extends Fragment {
   private DashboardViewModel viewModel;
   private ActivityRowAdapter activityAdapter;
   private AnnouncementAdapter announcementAdapter;
+  private BarChart attendanceChart;
 
   @Nullable
   @Override
@@ -40,11 +50,11 @@ public class DashboardFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
     viewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
 
+    attendanceChart = view.findViewById(R.id.attendance_chart);
     activityAdapter = new ActivityRowAdapter();
     announcementAdapter = new AnnouncementAdapter();
 
     androidx.recyclerview.widget.RecyclerView upcoming = view.findViewById(R.id.upcoming_list);
-    // Changed from LinearLayoutManager to GridLayoutManager with 2 columns
     upcoming.setLayoutManager(new GridLayoutManager(getContext(), 2));
     upcoming.setAdapter(activityAdapter);
 
@@ -63,10 +73,16 @@ public class DashboardFragment extends Fragment {
 
     viewModel.getActivities().observe(getViewLifecycleOwner(), activities -> {
       updateStats(statsContainer, viewModel.getScouts().getValue(), activities);
-      activityAdapter.submitList(activities);
+      if (activities != null) {
+          // Limit to 6 activities for 3x2 grid balance
+          List<Activity> limited = activities.subList(0, Math.min(6, activities.size()));
+          activityAdapter.submitList(limited);
+      }
     });
 
     viewModel.getAnnouncements().observe(getViewLifecycleOwner(), announcementAdapter::submitList);
+
+    viewModel.getAttendanceRecords().observe(getViewLifecycleOwner(), this::updateChart);
 
     viewModel.getSyncCompletedAt().observe(getViewLifecycleOwner(), completedAt -> {
       if (completedAt != null) {
@@ -75,15 +91,68 @@ public class DashboardFragment extends Fragment {
     });
   }
 
+  private void updateChart(List<AttendanceRecord> records) {
+    if (records == null || records.isEmpty() || attendanceChart == null) return;
+
+    List<BarEntry> entries = new ArrayList<>();
+    for (int i = 0; i < records.size(); i++) {
+      entries.add(new BarEntry(i, records.get(i).getAttendance()));
+    }
+
+    BarDataSet dataSet = new BarDataSet(entries, "נוכחות חניכים");
+    dataSet.setColor(requireContext().getColor(R.color.primary));
+    // Display the date above each bar
+    dataSet.setValueFormatter(new ValueFormatter() {
+        @Override
+        public String getBarLabel(BarEntry barEntry) {
+            int index = (int) barEntry.getX();
+            if (index >= 0 && index < records.size()) {
+                return records.get(index).getDate();
+            }
+            return "";
+        }
+    });
+    dataSet.setValueTextSize(10f);
+    dataSet.setValueTextColor(Color.DKGRAY);
+
+    BarData barData = new BarData(dataSet);
+    barData.setBarWidth(0.6f);
+
+    attendanceChart.setData(barData);
+    attendanceChart.getDescription().setEnabled(false);
+    attendanceChart.getLegend().setEnabled(false);
+    attendanceChart.setDrawValueAboveBar(true);
+    
+    XAxis xAxis = attendanceChart.getXAxis();
+    xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+    xAxis.setDrawGridLines(false);
+    xAxis.setGranularity(1f);
+    xAxis.setValueFormatter(new ValueFormatter() {
+      @Override
+      public String getFormattedValue(float value) {
+        int index = (int) value;
+        if (index >= 0 && index < records.size()) {
+          return records.get(index).getActivityName();
+        }
+        return "";
+      }
+    });
+
+    attendanceChart.getAxisLeft().setAxisMinimum(0f);
+    attendanceChart.getAxisRight().setEnabled(false);
+    attendanceChart.animateY(1000);
+    attendanceChart.invalidate();
+  }
+
   private void updateStats(ViewGroup container, List<Scout> scouts, List<Activity> activities) {
     container.removeAllViews();
     int totalScouts = scouts == null ? 0 : scouts.size();
     int totalActivities = activities == null ? 0 : activities.size();
 
-    addStatCard(container, "סך הכל חניכים", String.valueOf(totalScouts), "+2 מהחודש שעבר");
-    addStatCard(container, "פעילויות קרובות", String.valueOf(totalActivities), "3 מתוכננות החודש");
-    addStatCard(container, "תגים שנצברו", "+12", "+15% מהחודש שעבר");
-    addStatCard(container, "שיעור נוכחות", "92.5%", "-1.2% מהחודש שעבר");
+    addStatCard(container, "סך הכל חניכים", String.valueOf(totalScouts), "פעילים השנה");
+    addStatCard(container, "פעילויות מתוכננות", String.valueOf(totalActivities), "בחודש הקרוב");
+    addStatCard(container, "ימי פעילות", "שלישי, שישי", "נוכחות חובה");
+    addStatCard(container, "מצב סנכרון", "מחובר לענן", "עדכני");
   }
 
   private void addStatCard(ViewGroup container, String label, String value, String subtitle) {

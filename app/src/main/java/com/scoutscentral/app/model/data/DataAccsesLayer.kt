@@ -34,7 +34,19 @@ class DataAccsesLayer private constructor() {
 
     init {
         _attendanceRecords.value = emptyList()
+        seedData()
         syncWithSupabase(false)
+    }
+
+    fun seedData() {
+        val scoutList = mutableListOf<ScoutModel>()
+        scoutList.add(ScoutModel("1", "ליאם גרין", "", ScoutLevel.KEFIR, "liam.parent@example.com"))
+        scoutList.add(ScoutModel("2", "אוליביה", "", ScoutLevel.OFER, "olivia.parent@example.com"))
+        _scouts.value = scoutList
+
+        val activityList = mutableListOf<ScoutActivity>()
+        activityList.add(ScoutActivity("act-1", "סדנת קשרים", "2024-07-16T10:00:00Z", "Base", emptyList(), "Description", null))
+        _activities.value = activityList
     }
 
     private fun getImageUrlForActivity(title: String?, description: String?): String {
@@ -198,6 +210,7 @@ class DataAccsesLayer private constructor() {
         return try { supabaseService.fetchAttendanceForActivity(activityId) } catch (e: Exception) { emptyList() }
     }
 
+    @Throws(IOException::class)
     fun fetchScoutActivityHistory(scoutId: String, from: String, to: String): String {
         return try {
             supabaseService.getScoutAttendanceHistory(scoutId, from, to)
@@ -207,6 +220,13 @@ class DataAccsesLayer private constructor() {
     }
 
     fun refreshFromSupabase() { syncWithSupabase(true) }
+
+    fun clearLocalData() {
+        _scouts.value = emptyList()
+        _activities.value = emptyList()
+        _announcements.value = emptyList()
+        _attendanceRecords.value = emptyList()
+    }
 
     companion object {
         @Volatile

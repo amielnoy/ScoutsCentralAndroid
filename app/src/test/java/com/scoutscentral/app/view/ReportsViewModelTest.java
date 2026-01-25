@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.Observer;
 
+import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.model.ScoutLevel;
 import com.scoutscentral.app.model.data.DataAccsesLayer;
 import com.scoutscentral.app.view_model.ReportsViewModel;

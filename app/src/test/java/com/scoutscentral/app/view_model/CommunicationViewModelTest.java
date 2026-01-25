@@ -13,6 +13,7 @@ import androidx.core.content.IntentCompat;
 import androidx.lifecycle.MutableLiveData;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.model.ScoutLevel;
 import com.scoutscentral.app.model.data.DataAccsesLayer;
 
@@ -24,6 +25,7 @@ import org.mockito.ArgumentCaptor;
 import org.robolectric.annotation.Config;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
@@ -50,9 +52,10 @@ public class CommunicationViewModelTest {
         String email1 = "amielnoy@gmail.com";
         String email2 = "amielnoy@gmail.com";
         
+        // Fix: Use emptyList() and empty strings instead of nulls to satisfy Kotlin's non-null requirements
         List<Scout> scouts = Arrays.asList(
-            new Scout("1", "Scout A", "", ScoutLevel.KEFIR, email1, "", "", null),
-            new Scout("2", "Scout B", "", ScoutLevel.KEFIR, email2, "", "", null)
+            new Scout("1", "Scout A", "", ScoutLevel.KEFIR, email1, "", "", Collections.emptyList()),
+            new Scout("2", "Scout B", "", ScoutLevel.KEFIR, email2, "", "", Collections.emptyList())
         );
         MutableLiveData<List<Scout>> liveData = new MutableLiveData<>(scouts);
         when(mockedDataRepository.getScouts()).thenReturn(liveData);
