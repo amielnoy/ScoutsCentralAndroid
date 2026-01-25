@@ -15,12 +15,15 @@ import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.datepicker.*
 import com.google.android.material.snackbar.Snackbar
 import com.scoutscentral.app.R
 import com.scoutscentral.app.model.Activity as ScoutActivity
 import com.scoutscentral.app.model.Scout as ScoutModel
 import com.scoutscentral.app.model.data.DataAccsesLayer
+import com.scoutscentral.app.view.adapter.ActivityRowAdapter
 import com.scoutscentral.app.view_model.ActivitiesViewModel
 import kotlinx.parcelize.Parcelize
 import java.text.SimpleDateFormat
@@ -32,6 +35,7 @@ class ActivitiesFragment : Fragment() {
     private lateinit var viewModel: ActivitiesViewModel
     private val repository = DataAccsesLayer.getInstance()
     private var allActivities: List<ScoutActivity> = emptyList()
+    private lateinit var listAdapter: ActivityRowAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_activities, container, false)
@@ -40,6 +44,12 @@ class ActivitiesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this)[ActivitiesViewModel::class.java]
+
+        // Setup the list of scheduled activities
+        listAdapter = ActivityRowAdapter()
+        val recyclerView = view.findViewById<RecyclerView>(R.id.activities_list_full)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = listAdapter
 
         val btnTuesday = view.findViewById<View>(R.id.btn_attendance_tuesday)
         val btnFriday = view.findViewById<View>(R.id.btn_attendance_friday)
@@ -62,7 +72,9 @@ class ActivitiesFragment : Fragment() {
         }
 
         viewModel.activities.observe(viewLifecycleOwner) { activities ->
-            allActivities = (activities as? List<ScoutActivity>) ?: emptyList()
+            val list = (activities as? List<ScoutActivity>) ?: emptyList()
+            allActivities = list
+            listAdapter.submitList(list)
         }
     }
 
@@ -75,12 +87,13 @@ class ActivitiesFragment : Fragment() {
         try {
             val builder = MaterialDatePicker.Builder.datePicker()
             builder.setTitleText("בחר תאריך לפעולת $dayName")
+            builder.setCalendarConstraints(CalendarConstraints.Builder().build())
             
             try {
                 builder.setTheme(R.style.Theme_ScoutsCentral_DatePicker)
             } catch (ignored: Exception) {}
 
-            val dates = allActivities.mapNotNull { it.date?.split("T")?.getOrNull(0) }
+            val dates = allActivities.mapNotNull { it.date.split("T").getOrNull(0) }
             val highlightColor = ContextCompat.getColor(requireContext(), R.color.primary)
             
             builder.setDayViewDecorator(ActivityDayDecorator(ArrayList(dates), highlightColor))
@@ -115,7 +128,7 @@ class ActivitiesFragment : Fragment() {
         }
         val dateStr = sdf.format(calendar.time)
 
-        val existing = allActivities.firstOrNull { it.date?.startsWith(dateStr) == true }
+        val existing = allActivities.find { it.date.startsWith(dateStr) }
 
         if (existing != null) {
             onAttendance(existing)
@@ -125,7 +138,6 @@ class ActivitiesFragment : Fragment() {
     }
 
     private fun showNewActivityDetailsDialog(meetingType: String, isoDate: String) {
-        if (!isAdded) return
         val inflater = LayoutInflater.from(requireContext())
         val dialogView = inflater.inflate(R.layout.dialog_new_activity, null)
         val titleInput = dialogView.findViewById<EditText>(R.id.activity_title_input)
@@ -221,12 +233,11 @@ class ActivitiesFragment : Fragment() {
 }
 
 /**
- * Robust DayViewDecorator with strict Material 1.13.0 API signatures.
+ * Robust DayViewDecorator with manual Parcelable implementation to prevent crashes.
  */
-@Parcelize
 class ActivityDayDecorator(
     private val activityDates: ArrayList<String>,
-    @field:ColorInt private val highlightColor: Int
+    @ColorInt private val highlightColor: Int
 ) : DayViewDecorator(), Parcelable {
 
     override fun getBackgroundColor(context: Context, year: Int, month: Int, day: Int, valid: Boolean, selected: Boolean): ColorStateList? {
@@ -237,5 +248,22 @@ class ActivityDayDecorator(
     override fun getTextColor(context: Context, year: Int, month: Int, day: Int, valid: Boolean, selected: Boolean): ColorStateList? {
         val dateKey = String.format(Locale.US, "%04d-%02d-%02d", year, month + 1, day)
         return if (activityDates.contains(dateKey)) ColorStateList.valueOf(Color.WHITE) else null
+    }
+
+    constructor(parcel: Parcel) : this(
+        parcel.createStringArrayList() ?: arrayListOf(),
+        parcel.readInt()
+    )
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeStringList(activityDates)
+        parcel.writeInt(highlightColor)
+    }
+
+    override fun describeContents(): Int = 0
+
+    companion object CREATOR : Parcelable.Creator<ActivityDayDecorator> {
+        override fun createFromParcel(parcel: Parcel): ActivityDayDecorator = ActivityDayDecorator(parcel)
+        override fun newArray(size: Int): Array<ActivityDayDecorator?> = arrayOfNulls(size)
     }
 }
