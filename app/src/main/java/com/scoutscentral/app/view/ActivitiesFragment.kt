@@ -90,7 +90,7 @@ class ActivitiesFragment : Fragment() {
             try {
                 builder.setTheme(R.style.Theme_ScoutsCentral_DatePicker)
             } catch (ignored: Exception) {
-                Snackbar.make(requireView(), "שגיאה בפתיחת לוח השנה", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(requireView(), "+שגיאה בפתיחת לוח השנה"+ignored.message, Snackbar.LENGTH_SHORT).show()
             }
 
             val dates = allActivities.mapNotNull { it.date.split("T").getOrNull(0) }
