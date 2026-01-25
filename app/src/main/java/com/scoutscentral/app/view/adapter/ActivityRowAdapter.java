@@ -65,9 +65,9 @@ public class ActivityRowAdapter extends RecyclerView.Adapter<ActivityRowAdapter.
         holder.description.setVisibility(View.VISIBLE);
     }
 
-    // Load image
+    // Load image from scouts.webp directly
     Glide.with(holder.itemView.getContext())
-        .load(activity.getImageUrl())
+        .load(R.drawable.scouts)
         .placeholder(R.drawable.avatar_placeholder)
         .centerCrop()
         .into(holder.image);
