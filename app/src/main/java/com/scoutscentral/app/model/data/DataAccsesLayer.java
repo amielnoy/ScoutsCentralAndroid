@@ -11,11 +11,14 @@ import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.model.ScoutLevel;
 
 import java.io.IOException;
+import java.time.DayOfWeek;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class DataAccsesLayer {
   private static DataAccsesLayer instance;
@@ -59,29 +62,8 @@ public class DataAccsesLayer {
       "דיבור בפני קהל, ניהול פרויקטים", Arrays.asList("act-2", "act-4")));
     scouts.setValue(scoutList);
 
-    List<Activity> activityList = new ArrayList<>();
-    activityList.add(new Activity("act-1", "סדנת קשירת קשרים", "2024-07-15T10:00:00Z",
-      "מתנ\"ס קהילתי", Arrays.asList("חבל (מטר 1 לכל חניך)", "חוברת הדרכה"),
-      "למדו קשרים חיוניים למחנאות והישרדות.", getImageUrlForTitle("סדנת קשירת קשרים")));
-    activityList.add(new Activity("act-2", "בישולי מדורה", "2024-07-20T18:00:00Z",
-      "פארק עמק ירוק", Arrays.asList("נקניקיות", "לחמניות", "מרשמתלו", "שיפודים"),
-      "התאספו סביב המדורה לשירים ואוכל טעים.", getImageUrlForTitle("בישולי מדורה")));
-    activityList.add(new Activity("act-3", "טיול שימור יערות", "2024-08-01T09:00:00Z",
-      "שביל היער הלוחש", Arrays.asList("כפפות", "שקיות אשפה", "בקבוקי מים"),
-      "טיול המתמקד בלימוד על הצמחייה המקומית וניקוי השביל.", getImageUrlForTitle("טיול שימור יערות")));
-    activityList.add(new Activity("act-4", "ביקור במרכז גיל הזהב", "2024-08-10T14:00:00Z",
-      "מרכז גיל הזהב \"שדות משמש\"", Arrays.asList("משחקי קופסה", "כרטיסי ברכה בעבודת יד"),
-      "בלו אחר הצהריים עם קשישים מקומיים, שתפו סיפורים ומשחקים.", getImageUrlForTitle("ביקור במרכז גיל הזהב")));
-    activities.setValue(activityList);
-
-    List<Announcement> announcementList = new ArrayList<>();
-    announcementList.add(new Announcement("ann-1", "הרשמה למחנה קיץ",
-      "ההרשמה למחנה הקיץ השנתי פתוחה! אנא הירשמו עד ה-1 ביולי כדי להבטיח את מקומכם. תכננו עבורכם שורה של פעילויות מרגשות.",
-      "2024-06-15T11:00:00Z"));
-    announcementList.add(new Announcement("ann-2", "השגנו את יעד גיוס התרומות!",
-      "תודה ענקית לכל מי שהשתתף במכירת העוגות האחרונה שלנו. הצלחנו לעמוד ביעד גיוס התרומות לתמיכה במקלט לבעלי חיים המקומי!",
-      "2024-06-20T16:30:00Z"));
-    announcements.setValue(announcementList);
+    // Initial local data is not needed as we sync from Supabase
+    activities.setValue(new ArrayList<>());
   }
 
   private String getImageUrlForTitle(String title) {
@@ -180,8 +162,12 @@ public class DataAccsesLayer {
     List<Activity> current = new ArrayList<>(activities.getValue());
     String imageUrl = getImageUrlForTitle(title);
     Activity newActivity = new Activity(id, title, date, location, new ArrayList<>(), description, imageUrl);
-    current.add(0, newActivity);
-    activities.setValue(current);
+    
+    // Only add to local LiveData if it matches Tuesday or Friday
+    if (isTuesdayOrFriday(date)) {
+        current.add(0, newActivity);
+        activities.setValue(current);
+    }
     runSupabaseTask(() -> supabaseService.upsertActivity(newActivity));
   }
 
@@ -246,6 +232,17 @@ public class DataAccsesLayer {
     return java.time.Instant.now().toString();
   }
 
+  private boolean isTuesdayOrFriday(String isoDate) {
+    if (isoDate == null || isoDate.isEmpty()) return false;
+    try {
+      ZonedDateTime zdt = ZonedDateTime.parse(isoDate);
+      DayOfWeek dow = zdt.getDayOfWeek();
+      return dow == DayOfWeek.TUESDAY || dow == DayOfWeek.FRIDAY;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
   private void syncWithSupabase(boolean notifyOnSuccess) {
     if (!supabaseService.isConfigured()) return;
     new Thread(() -> {
@@ -255,8 +252,14 @@ public class DataAccsesLayer {
         else supabaseService.syncScouts(scouts.getValue());
 
         List<Activity> remoteActivities = supabaseService.fetchActivities();
-        if (remoteActivities != null && !remoteActivities.isEmpty()) activities.postValue(remoteActivities);
-        else supabaseService.syncActivities(activities.getValue());
+        if (remoteActivities != null && !remoteActivities.isEmpty()) {
+            List<Activity> filtered = remoteActivities.stream()
+                .filter(act -> isTuesdayOrFriday(act.getDate()))
+                .collect(Collectors.toList());
+            activities.postValue(filtered);
+        } else {
+            supabaseService.syncActivities(activities.getValue());
+        }
 
         List<Announcement> remoteAnnouncements = supabaseService.fetchAnnouncements();
         if (remoteAnnouncements != null && !remoteAnnouncements.isEmpty()) announcements.postValue(remoteAnnouncements);
