@@ -30,7 +30,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class ActivitiesFragment : Fragment() {
+class ActivitiesFragment : Fragment(), ActivityRowAdapter.ActivityActionListener {
     private lateinit var viewModel: ActivitiesViewModel
     private var allActivities: List<ScoutActivity> = emptyList()
     private lateinit var listAdapter: ActivityRowAdapter
@@ -45,6 +45,7 @@ class ActivitiesFragment : Fragment() {
 
         // Setup the list of scheduled activities
         listAdapter = ActivityRowAdapter()
+        listAdapter.setListener(this) // Set fragment as listener for actions
         val recyclerView = view.findViewById<RecyclerView>(R.id.activities_list_full)
         recyclerView?.layoutManager = LinearLayoutManager(requireContext())
         recyclerView?.adapter = listAdapter
@@ -70,10 +71,23 @@ class ActivitiesFragment : Fragment() {
         }
 
         viewModel.activities.observe(viewLifecycleOwner) { activities ->
-            val list = activities ?: emptyList()
+            val list = (activities as? List<ScoutActivity>) ?: emptyList()
             allActivities = list
             listAdapter.submitList(list)
         }
+    }
+
+    override fun onDelete(activity: ScoutActivity) {
+        if (!isAdded) return
+        AlertDialog.Builder(requireContext())
+            .setTitle("מחיקת פעילות")
+            .setMessage("האם למחוק את הפעילות: ${activity.title}?")
+            .setPositiveButton("מחק") { _, _ ->
+                viewModel.deleteActivity(activity.id)
+                Snackbar.make(requireView(), "הפעילות נמחקה", Snackbar.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("ביטול", null)
+            .show()
     }
 
     private fun showMeetingDatePicker(dayName: String, dayOfWeek: Int) {
@@ -89,9 +103,7 @@ class ActivitiesFragment : Fragment() {
             
             try {
                 builder.setTheme(R.style.Theme_ScoutsCentral_DatePicker)
-            } catch (ignored: Exception) {
-                Snackbar.make(requireView(), "+שגיאה בפתיחת לוח השנה"+ignored.message, Snackbar.LENGTH_SHORT).show()
-            }
+            } catch (ignored: Exception) {}
 
             val dates = allActivities.mapNotNull { it.date.split("T").getOrNull(0) }
             val highlightColor = ContextCompat.getColor(requireContext(), R.color.primary)
@@ -116,7 +128,7 @@ class ActivitiesFragment : Fragment() {
 
             picker.show(childFragmentManager, tag)
         } catch (e: Exception) {
-            Snackbar.make(requireView(), "שגיאה בתצורת ה-datepicker", Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(requireView(), "שגיאה בפתיחת לוח השנה", Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -166,7 +178,8 @@ class ActivitiesFragment : Fragment() {
     private fun showNewActivityAttendanceDialog(title: String, description: String, isoDate: String) {
         if (!isAdded) return
 
-        val scouts = (DataAccsesLayer.getInstance().scouts.value as? List<ScoutModel>) ?: return
+        val repository = DataAccsesLayer.getInstance()
+        val scouts = (repository?.scouts?.value as? List<ScoutModel>) ?: return
         if (scouts.isEmpty()) {
             Snackbar.make(requireView(), "לא נמצאו חניכים במערכת", Snackbar.LENGTH_SHORT).show()
             return
@@ -184,7 +197,7 @@ class ActivitiesFragment : Fragment() {
                 val activityId = viewModel.addActivity(title, isoDate, "שבט מוצקין", description)
                 val presentIds = scouts.filterIndexed { index, _ -> checked[index] }.map { it.id }
                 if (presentIds.isNotEmpty()) {
-                    DataAccsesLayer.getInstance().saveAttendance(activityId, presentIds)
+                    repository?.saveAttendance(activityId, presentIds)
                 }
                 Snackbar.make(requireView(), "פעולה ונוכחות נשמרו בהצלחה", Snackbar.LENGTH_SHORT).show()
             }
@@ -194,12 +207,13 @@ class ActivitiesFragment : Fragment() {
 
     private fun onAttendance(scoutActivity: ScoutActivity) {
         if (!isAdded) return
-        val scouts = (DataAccsesLayer.getInstance().scouts.value as? List<ScoutModel>) ?: return
+        val repository = DataAccsesLayer.getInstance()
+        val scouts = (repository?.scouts?.value as? List<ScoutModel>) ?: return
         val loading = Snackbar.make(requireView(), "טוען נוכחות...", Snackbar.LENGTH_INDEFINITE)
         loading.show()
 
         Thread {
-            val presentIds = DataAccsesLayer.getInstance().fetchAttendanceForActivity(scoutActivity.id) ?: emptyList()
+            val presentIds = repository?.fetchAttendanceForActivity(scoutActivity.id) ?: emptyList()
             val names = scouts.map { it.name }.toTypedArray()
             val checked = BooleanArray(scouts.size) { presentIds.contains(scouts[it].id) }
 
@@ -213,7 +227,7 @@ class ActivitiesFragment : Fragment() {
                     }
                     .setPositiveButton("שמור") { _, _ ->
                         val updatedIds = scouts.filterIndexed { index, _ -> checked[index] }.map { it.id }
-                        DataAccsesLayer.getInstance().saveAttendance(scoutActivity.id, updatedIds)
+                        repository?.saveAttendance(scoutActivity.id, updatedIds)
                         Snackbar.make(requireView(), "נוכחות נשמרה", Snackbar.LENGTH_SHORT).show()
                     }
                     .setNegativeButton("ביטול", null)

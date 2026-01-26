@@ -3,10 +3,12 @@ package com.scoutscentral.app.view.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -20,7 +22,16 @@ import java.util.List;
 import java.util.Locale;
 
 public class ActivityRowAdapter extends RecyclerView.Adapter<ActivityRowAdapter.ActivityViewHolder> {
+  public interface ActivityActionListener {
+    void onDelete(Activity activity);
+  }
+
   private final List<Activity> items = new ArrayList<>();
+  private ActivityActionListener listener;
+
+  public void setListener(ActivityActionListener listener) {
+    this.listener = listener;
+  }
 
   public void submitList(List<Activity> activities) {
     items.clear();
@@ -44,7 +55,6 @@ public class ActivityRowAdapter extends RecyclerView.Adapter<ActivityRowAdapter.
     holder.title.setText(activity.getTitle());
     holder.location.setText(activity.getLocation());
     
-    // Set date badge
     if (activity.getDate() != null && !activity.getDate().isEmpty()) {
         try {
             ZonedDateTime zdt = ZonedDateTime.parse(activity.getDate());
@@ -56,7 +66,6 @@ public class ActivityRowAdapter extends RecyclerView.Adapter<ActivityRowAdapter.
         }
     }
 
-    // Set description
     if (activity.getDescription() != null && !activity.getDescription().isEmpty()) {
         holder.description.setText(activity.getDescription());
         holder.description.setVisibility(View.VISIBLE);
@@ -65,12 +74,25 @@ public class ActivityRowAdapter extends RecyclerView.Adapter<ActivityRowAdapter.
         holder.description.setVisibility(View.VISIBLE);
     }
 
-    // Load image from scouts.webp directly
     Glide.with(holder.itemView.getContext())
         .load(R.drawable.scouts)
         .placeholder(R.drawable.avatar_placeholder)
         .centerCrop()
         .into(holder.image);
+
+    holder.menuBtn.setOnClickListener(v -> showPopupMenu(v, activity));
+  }
+
+  private void showPopupMenu(View view, Activity activity) {
+    PopupMenu popup = new PopupMenu(view.getContext(), view);
+    popup.getMenu().add("מחק פעילות");
+    popup.setOnMenuItemClickListener(item -> {
+        if (listener != null) {
+            listener.onDelete(activity);
+        }
+        return true;
+    });
+    popup.show();
   }
 
   @Override
@@ -85,6 +107,7 @@ public class ActivityRowAdapter extends RecyclerView.Adapter<ActivityRowAdapter.
     final TextView dateDay;
     final TextView dateMonth;
     final ImageView image;
+    final ImageButton menuBtn;
 
     ActivityViewHolder(@NonNull View itemView) {
       super(itemView);
@@ -94,6 +117,7 @@ public class ActivityRowAdapter extends RecyclerView.Adapter<ActivityRowAdapter.
       dateDay = itemView.findViewById(R.id.activity_date_day);
       dateMonth = itemView.findViewById(R.id.activity_date_month);
       image = itemView.findViewById(R.id.activity_image);
+      menuBtn = itemView.findViewById(R.id.activity_menu);
     }
   }
 }

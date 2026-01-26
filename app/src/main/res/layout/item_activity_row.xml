@@ -22,13 +22,17 @@
             android:src="@drawable/scouts"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Gradient Overlay for better text readability if needed -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="110dp"
-            android:background="@drawable/activity_placeholder"
-            android:alpha="0.1"
-            app:layout_constraintTop_toTopOf="parent" />
+        <!-- Options Menu Button -->
+        <ImageButton
+            android:id="@+id/activity_menu"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_more"
+            app:tint="@android:color/black"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Date Badge overlay -->
         <com.google.android.material.card.MaterialCardView
