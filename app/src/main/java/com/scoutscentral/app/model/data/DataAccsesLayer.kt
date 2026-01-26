@@ -169,7 +169,7 @@ class DataAccsesLayer private constructor() {
             _activities.value = current
             Thread { 
                 try { 
-                    supabaseService.upsertActivity(updated as com.scoutscentral.app.model.Activity) 
+                    supabaseService.upsertActivity(updated as ActivityModel)
                 } catch (e: Exception) { Log.e("DataRepo", "Update activity failed", e) }
             }.start()
         }
