@@ -3,7 +3,7 @@ package com.scoutscentral.app.model.data
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.scoutscentral.app.model.Activity as ScoutActivity
+import com.scoutscentral.app.model.Activity as ActivityModel
 import com.scoutscentral.app.model.Announcement
 import com.scoutscentral.app.model.AttendanceRecord
 import com.scoutscentral.app.model.Scout as ScoutModel
@@ -18,8 +18,8 @@ class DataAccsesLayer private constructor() {
     private val _scouts = MutableLiveData<List<ScoutModel>>()
     val scouts: LiveData<List<ScoutModel>> = _scouts
 
-    private val _activities = MutableLiveData<List<ScoutActivity>>()
-    val activities: LiveData<List<ScoutActivity>> = _activities
+    private val _activities = MutableLiveData<List<ActivityModel>>()
+    val activities: LiveData<List<ActivityModel>> = _activities
 
     private val _announcements = MutableLiveData<List<Announcement>>()
     val announcements: LiveData<List<Announcement>> = _announcements
@@ -44,8 +44,8 @@ class DataAccsesLayer private constructor() {
         scoutList.add(ScoutModel("2", "אוליביה", "", ScoutLevel.OFER, "olivia.parent@example.com"))
         _scouts.value = scoutList
 
-        val activityList = mutableListOf<ScoutActivity>()
-        activityList.add(ScoutActivity("act-1", "סדנת קשרים", "2024-07-16T10:00:00Z", "Base", emptyList(), "Description", null))
+        val activityList = mutableListOf<ActivityModel>()
+        activityList.add(ActivityModel("act-1", "סדנת קשרים", "2024-07-16T10:00:00Z", "Base", emptyList(), "Description", null))
         _activities.value = activityList
     }
 
@@ -78,10 +78,12 @@ class DataAccsesLayer private constructor() {
 
                 val remoteActivities = supabaseService.fetchActivities()
                 if (!remoteActivities.isNullOrEmpty()) {
-                    val processed = (remoteActivities as List<ScoutActivity>)
-                        .filter { isTuesdayOrFriday(it.date) }
-                        .onEach { it.imageUrl = getImageUrlForActivity(it.title, it.description) }
-                        .sortedBy { it.date }
+                    val processed = (remoteActivities as List<ActivityModel>)
+                        .filter { activity: ActivityModel -> isTuesdayOrFriday(activity.date) }
+                        .onEach { activity: ActivityModel -> 
+                            activity.imageUrl = getImageUrlForActivity(activity.title, activity.description) 
+                        }
+                        .sortedBy { activity: ActivityModel -> activity.date }
                     _activities.postValue(processed)
                 }
 
@@ -105,7 +107,9 @@ class DataAccsesLayer private constructor() {
         current.add(0, newScout)
         _scouts.value = current
         Thread { 
-            try { supabaseService.upsertScout(newScout as com.scoutscentral.app.model.Scout) } catch (e: Exception) { Log.e("DataRepo", "Upsert scout failed", e) }
+            try { 
+                supabaseService.upsertScout(newScout as com.scoutscentral.app.model.Scout) 
+            } catch (e: Exception) { Log.e("DataRepo", "Upsert scout failed", e) }
         }.start()
     }
 
@@ -116,7 +120,9 @@ class DataAccsesLayer private constructor() {
             current[index] = updated
             _scouts.value = current
             Thread { 
-                try { supabaseService.upsertScout(updated as com.scoutscentral.app.model.Scout) } catch (e: Exception) { Log.e("DataRepo", "Update scout failed", e) }
+                try { 
+                    supabaseService.upsertScout(updated as com.scoutscentral.app.model.Scout) 
+                } catch (e: Exception) { Log.e("DataRepo", "Update scout failed", e) }
             }.start()
         }
     }
@@ -134,7 +140,7 @@ class DataAccsesLayer private constructor() {
     fun addActivity(title: String, date: String, location: String, description: String): String {
         val id = "act-" + UUID.randomUUID().toString().substring(0, 8)
         val imageUrl = getImageUrlForActivity(title, description)
-        val newActivity = ScoutActivity(id, title, date, location, emptyList(), description, imageUrl)
+        val newActivity = ActivityModel(id, title, date, location, emptyList(), description, imageUrl)
         
         val current = _activities.value?.toMutableList() ?: mutableListOf()
         if (isTuesdayOrFriday(date)) {
@@ -143,12 +149,14 @@ class DataAccsesLayer private constructor() {
             _activities.value = current
         }
         Thread { 
-            try { supabaseService.upsertActivity(newActivity as com.scoutscentral.app.model.Activity) } catch (e: Exception) { Log.e("DataRepo", "Add activity failed", e) }
+            try { 
+                supabaseService.upsertActivity(newActivity as com.scoutscentral.app.model.Activity) 
+            } catch (e: Exception) { Log.e("DataRepo", "Add activity failed", e) }
         }.start()
         return id
     }
 
-    fun updateActivity(updated: ScoutActivity) {
+    fun updateActivity(updated: ActivityModel) {
         val current = _activities.value?.toMutableList() ?: return
         val index = current.indexOfFirst { it.id == updated.id }
         if (index != -1) {
@@ -156,7 +164,9 @@ class DataAccsesLayer private constructor() {
             current.sortBy { it.date }
             _activities.value = current
             Thread { 
-                try { supabaseService.upsertActivity(updated as com.scoutscentral.app.model.Activity) } catch (e: Exception) { Log.e("DataRepo", "Update activity failed", e) }
+                try { 
+                    supabaseService.upsertActivity(updated as com.scoutscentral.app.model.Activity) 
+                } catch (e: Exception) { Log.e("DataRepo", "Update activity failed", e) }
             }.start()
         }
     }
@@ -210,7 +220,6 @@ class DataAccsesLayer private constructor() {
         return try { supabaseService.fetchAttendanceForActivity(activityId) } catch (e: Exception) { emptyList() }
     }
 
-    @Throws(IOException::class)
     fun fetchScoutActivityHistory(scoutId: String, from: String, to: String): String {
         return try {
             supabaseService.getScoutAttendanceHistory(scoutId, from, to)

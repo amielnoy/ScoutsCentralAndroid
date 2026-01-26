@@ -22,17 +22,29 @@
             android:src="@drawable/scouts"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Options Menu Button -->
-        <ImageButton
-            android:id="@+id/activity_menu"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_more"
-            app:tint="@android:color/black"
+        <!-- Floating Options Menu Button -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/activity_menu_container"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="12dp"
+            app:cardBackgroundColor="@color/surface"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="0dp"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageButton
+                android:id="@+id/activity_menu"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackground"
+                android:src="@drawable/ic_more"
+                android:padding="8dp"
+                android:scaleType="fitCenter"
+                app:tint="@android:color/black" />
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- Date Badge overlay -->
         <com.google.android.material.card.MaterialCardView

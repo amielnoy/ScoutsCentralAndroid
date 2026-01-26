@@ -24,6 +24,7 @@ import java.util.Locale;
 public class ActivityRowAdapter extends RecyclerView.Adapter<ActivityRowAdapter.ActivityViewHolder> {
   public interface ActivityActionListener {
     void onDelete(Activity activity);
+    void onEdit(Activity activity);
   }
 
   private final List<Activity> items = new ArrayList<>();
@@ -85,10 +86,16 @@ public class ActivityRowAdapter extends RecyclerView.Adapter<ActivityRowAdapter.
 
   private void showPopupMenu(View view, Activity activity) {
     PopupMenu popup = new PopupMenu(view.getContext(), view);
+    popup.getMenu().add("ערוך פעילות");
     popup.getMenu().add("מחק פעילות");
+    
     popup.setOnMenuItemClickListener(item -> {
         if (listener != null) {
-            listener.onDelete(activity);
+            if (item.getTitle().equals("מחק פעילות")) {
+                listener.onDelete(activity);
+            } else if (item.getTitle().equals("ערוך פעילות")) {
+                listener.onEdit(activity);
+            }
         }
         return true;
     });

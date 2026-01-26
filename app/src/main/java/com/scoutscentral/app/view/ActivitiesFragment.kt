@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.datepicker.*
 import com.google.android.material.snackbar.Snackbar
 import com.scoutscentral.app.R
-import com.scoutscentral.app.model.Activity as ScoutActivity
 import com.scoutscentral.app.model.Scout as ScoutModel
 import com.scoutscentral.app.model.data.DataAccsesLayer
 import com.scoutscentral.app.view.adapter.ActivityRowAdapter
@@ -29,6 +28,8 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
+
+import com.scoutscentral.app.model.Activity as ScoutActivity
 
 class ActivitiesFragment : Fragment(), ActivityRowAdapter.ActivityActionListener {
     private lateinit var viewModel: ActivitiesViewModel
@@ -43,9 +44,8 @@ class ActivitiesFragment : Fragment(), ActivityRowAdapter.ActivityActionListener
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this)[ActivitiesViewModel::class.java]
 
-        // Setup the list of scheduled activities
         listAdapter = ActivityRowAdapter()
-        listAdapter.setListener(this) // Set fragment as listener for actions
+        listAdapter.setListener(this)
         val recyclerView = view.findViewById<RecyclerView>(R.id.activities_list_full)
         recyclerView?.layoutManager = LinearLayoutManager(requireContext())
         recyclerView?.adapter = listAdapter
@@ -70,13 +70,14 @@ class ActivitiesFragment : Fragment(), ActivityRowAdapter.ActivityActionListener
                 .show()
         }
 
-        viewModel.activities.observe(viewLifecycleOwner) { activities ->
+        viewModel.getActivities().observe(viewLifecycleOwner) { activities ->
             val list = (activities as? List<ScoutActivity>) ?: emptyList()
             allActivities = list
             listAdapter.submitList(list)
         }
     }
 
+    // Explicitly using the full model path to avoid clash with android.app.Activity
     override fun onDelete(activity: ScoutActivity) {
         if (!isAdded) return
         AlertDialog.Builder(requireContext())
@@ -88,6 +89,11 @@ class ActivitiesFragment : Fragment(), ActivityRowAdapter.ActivityActionListener
             }
             .setNegativeButton("ביטול", null)
             .show()
+    }
+
+    override fun onEdit(activity: ScoutActivity) {
+        if (!isAdded) return
+        showNewActivityDetailsDialog(activity.title, activity.date, activity)
     }
 
     private fun showMeetingDatePicker(dayName: String, dayOfWeek: Int) {
@@ -105,10 +111,15 @@ class ActivitiesFragment : Fragment(), ActivityRowAdapter.ActivityActionListener
                 builder.setTheme(R.style.Theme_ScoutsCentral_DatePicker)
             } catch (ignored: Exception) {}
 
-            val dates = allActivities.mapNotNull { it.date.split("T").getOrNull(0) }
+            val dates = allActivities.mapNotNull { it.date?.split("T")?.getOrNull(0) }
             val highlightColor = ContextCompat.getColor(requireContext(), R.color.primary)
-            
-            builder.setDayViewDecorator(ActivityDayDecorator(ArrayList(dates), highlightColor))
+            if (dates.isNotEmpty()) {
+                try {
+                    builder.setDayViewDecorator(ActivityDayDecorator(ArrayList(dates), highlightColor))
+                } catch (ignored: Throwable) {
+                    // Ignore decorator issues to avoid crashing the picker.
+                }
+            }
 
             val picker = builder.build()
 
@@ -126,7 +137,11 @@ class ActivitiesFragment : Fragment(), ActivityRowAdapter.ActivityActionListener
                 handleDateSelection(selectedDate, dayName)
             }
 
-            picker.show(childFragmentManager, tag)
+            try {
+                picker.show(childFragmentManager, tag)
+            } catch (e: IllegalStateException) {
+                Snackbar.make(requireView(), "שגיאה בפתיחת לוח השנה", Snackbar.LENGTH_SHORT).show()
+            }
         } catch (e: Exception) {
             Snackbar.make(requireView(), "שגיאה בפתיחת לוח השנה", Snackbar.LENGTH_SHORT).show()
         }
@@ -140,27 +155,28 @@ class ActivitiesFragment : Fragment(), ActivityRowAdapter.ActivityActionListener
         }
         val dateStr = sdf.format(calendar.time)
 
-        val existing = allActivities.find { it.date.startsWith(dateStr) }
+        val existing = allActivities.firstOrNull { it.date?.startsWith(dateStr) == true }
 
         if (existing != null) {
             onAttendance(existing)
         } else {
-            showNewActivityDetailsDialog(meetingType, "${dateStr}T16:00:00Z")
+            showNewActivityDetailsDialog(meetingType, "${dateStr}T16:00:00Z", null)
         }
     }
 
-    private fun showNewActivityDetailsDialog(meetingType: String, isoDate: String) {
+    private fun showNewActivityDetailsDialog(defaultTitle: String, isoDate: String, existingActivity: ScoutActivity?) {
         val inflater = LayoutInflater.from(requireContext())
         val dialogView = inflater.inflate(R.layout.dialog_new_activity, null)
         val titleInput = dialogView.findViewById<EditText>(R.id.activity_title_input)
         val descInput = dialogView.findViewById<EditText>(R.id.activity_desc_input)
 
-        titleInput.setText(meetingType)
+        titleInput.setText(existingActivity?.title ?: defaultTitle)
+        descInput.setText(existingActivity?.description ?: "")
 
         AlertDialog.Builder(requireContext())
-            .setTitle("פרטי פעולה חדשה")
+            .setTitle(if (existingActivity == null) "פרטי פעולה חדשה" else "עריכת פעולה")
             .setView(dialogView)
-            .setPositiveButton("המשך") { _, _ ->
+            .setPositiveButton("שמור") { _, _ ->
                 val title = titleInput.text.toString().trim()
                 val description = descInput.text.toString().trim()
                 
@@ -169,7 +185,13 @@ class ActivitiesFragment : Fragment(), ActivityRowAdapter.ActivityActionListener
                     return@setPositiveButton
                 }
                 
-                showNewActivityAttendanceDialog(title, description, isoDate)
+                if (existingActivity == null) {
+                    showNewActivityAttendanceDialog(title, description, isoDate)
+                } else {
+                    val updated = existingActivity.copy(title = title, description = description)
+                    viewModel.updateActivity(updated)
+                    Snackbar.make(requireView(), "הפעילות עודכנה", Snackbar.LENGTH_SHORT).show()
+                }
             }
             .setNegativeButton("ביטול", null)
             .show()
@@ -205,7 +227,7 @@ class ActivitiesFragment : Fragment(), ActivityRowAdapter.ActivityActionListener
             .show()
     }
 
-    private fun onAttendance(scoutActivity: ScoutActivity) {
+    private fun onAttendance(activityModel: ScoutActivity) {
         if (!isAdded) return
         val repository = DataAccsesLayer.getInstance()
         val scouts = (repository?.scouts?.value as? List<ScoutModel>) ?: return
@@ -213,7 +235,7 @@ class ActivitiesFragment : Fragment(), ActivityRowAdapter.ActivityActionListener
         loading.show()
 
         Thread {
-            val presentIds = repository?.fetchAttendanceForActivity(scoutActivity.id) ?: emptyList()
+            val presentIds = repository?.fetchAttendanceForActivity(activityModel.id) ?: emptyList()
             val names = scouts.map { it.name }.toTypedArray()
             val checked = BooleanArray(scouts.size) { presentIds.contains(scouts[it].id) }
 
@@ -221,13 +243,13 @@ class ActivitiesFragment : Fragment(), ActivityRowAdapter.ActivityActionListener
                 if (!isAdded) return@runOnUiThread
                 loading.dismiss()
                 AlertDialog.Builder(requireContext())
-                    .setTitle("נוכחות - ${scoutActivity.title} (${formatDate(scoutActivity.date)})")
+                    .setTitle("נוכחות - ${activityModel.title} (${formatDate(activityModel.date)})")
                     .setMultiChoiceItems(names, checked) { _, which, isChecked ->
                         checked[which] = isChecked
                     }
                     .setPositiveButton("שמור") { _, _ ->
                         val updatedIds = scouts.filterIndexed { index, _ -> checked[index] }.map { it.id }
-                        repository?.saveAttendance(scoutActivity.id, updatedIds)
+                        repository.saveAttendance(activityModel.id, updatedIds)
                         Snackbar.make(requireView(), "נוכחות נשמרה", Snackbar.LENGTH_SHORT).show()
                     }
                     .setNegativeButton("ביטול", null)
@@ -254,13 +276,13 @@ class ActivityDayDecorator(
     @ColorInt private val highlightColor: Int
 ) : DayViewDecorator(), Parcelable {
 
-    override fun getBackgroundColor(p0: Context, p1: Int, p2: Int, p3: Int, p4: Boolean, p5: Boolean): ColorStateList? {
-        val dateKey = String.format(Locale.US, "%04d-%02d-%02d", p1, p2 + 1, p3)
+    override fun getBackgroundColor(context: Context, year: Int, month: Int, day: Int, valid: Boolean, selected: Boolean): ColorStateList? {
+        val dateKey = String.format(Locale.US, "%04d-%02d-%02d", year, month + 1, day)
         return if (activityDates.contains(dateKey)) ColorStateList.valueOf(highlightColor) else null
     }
 
-    override fun getTextColor(p0: Context, p1: Int, p2: Int, p3: Int, p4: Boolean, p5: Boolean): ColorStateList? {
-        val dateKey = String.format(Locale.US, "%04d-%02d-%02d", p1, p2 + 1, p3)
+    override fun getTextColor(context: Context, year: Int, month: Int, day: Int, valid: Boolean, selected: Boolean): ColorStateList? {
+        val dateKey = String.format(Locale.US, "%04d-%02d-%02d", year, month + 1, day)
         return if (activityDates.contains(dateKey)) ColorStateList.valueOf(Color.WHITE) else null
     }
 

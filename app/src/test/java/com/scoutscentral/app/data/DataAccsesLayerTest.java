@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
-import com.scoutscentral.app.model.Activity;
 import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.model.ScoutLevel;
 import com.scoutscentral.app.model.data.DataAccsesLayer;
