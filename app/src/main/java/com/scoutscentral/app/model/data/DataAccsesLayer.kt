@@ -71,11 +71,13 @@ class DataAccsesLayer private constructor() {
         if (!supabaseService.isConfigured) return
         Thread {
             try {
+                // Sync Scouts
                 val remoteScouts = supabaseService.fetchScouts()
                 if (!remoteScouts.isNullOrEmpty()) {
                     _scouts.postValue(remoteScouts as List<ScoutModel>)
                 }
 
+                // Sync Activities
                 val remoteActivities = supabaseService.fetchActivities()
                 if (!remoteActivities.isNullOrEmpty()) {
                     val processed = (remoteActivities as List<ActivityModel>)
@@ -87,9 +89,11 @@ class DataAccsesLayer private constructor() {
                     _activities.postValue(processed)
                 }
 
+                // Sync Announcements
                 val remoteAnnouncements = supabaseService.fetchAnnouncements()
                 if (!remoteAnnouncements.isNullOrEmpty()) _announcements.postValue(remoteAnnouncements)
 
+                // Sync Attendance
                 val remoteAttendance = supabaseService.fetchAttendanceRecords()
                 if (remoteAttendance != null) _attendanceRecords.postValue(remoteAttendance)
 
