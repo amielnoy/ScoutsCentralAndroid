@@ -6,14 +6,14 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.scoutscentral.app.model.Scout;
-import com.scoutscentral.app.model.data.DataAccsesLayer;
+import com.scoutscentral.app.model.data.DataAccessLayer;
 import com.scoutscentral.app.model.data.GeminiService;
 
 import java.util.List;
 
 public class ProgressViewModel extends ViewModel {
   private static final String TAG = "ProgressViewModel";
-  private final DataAccsesLayer repository = DataAccsesLayer.getInstance();
+  private final DataAccessLayer repository = DataAccessLayer.getInstance();
   private final GeminiService geminiService = new GeminiService();
   private final MutableLiveData<String> generatedPlan = new MutableLiveData<>();
 

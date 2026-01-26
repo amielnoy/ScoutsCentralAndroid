@@ -11,7 +11,7 @@ import androidx.lifecycle.Observer;
 
 import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.model.ScoutLevel;
-import com.scoutscentral.app.model.data.DataAccsesLayer;
+import com.scoutscentral.app.model.data.DataAccessLayer;
 import com.scoutscentral.app.view_model.ReportsViewModel;
 
 import org.junit.Before;
@@ -28,12 +28,12 @@ public class ReportsViewModelTest {
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
-    private DataAccsesLayer mockRepository;
+    private DataAccessLayer mockRepository;
     private ReportsViewModel viewModel;
 
     @Before
     public void setUp() {
-        mockRepository = mock(DataAccsesLayer.class);
+        mockRepository = mock(DataAccessLayer.class);
         viewModel = new ReportsViewModel(mockRepository);
     }
 

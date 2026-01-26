@@ -9,7 +9,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
 import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.model.ScoutLevel;
-import com.scoutscentral.app.model.data.DataAccsesLayer;
+import com.scoutscentral.app.model.data.DataAccessLayer;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,11 +28,11 @@ public class DataAccsesLayerTest {
     @Rule
     public TestRule rule = new InstantTaskExecutorRule();
 
-    private DataAccsesLayer repository;
+    private DataAccessLayer repository;
 
     @Before
     public void setUp() {
-        repository = DataAccsesLayer.getInstance();
+        repository = DataAccessLayer.getInstance();
         repository.clearLocalData();
         repository.seedData();
     }

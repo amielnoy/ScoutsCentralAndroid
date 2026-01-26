@@ -4,12 +4,12 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.scoutscentral.app.model.Activity;
-import com.scoutscentral.app.model.data.DataAccsesLayer;
+import com.scoutscentral.app.model.data.DataAccessLayer;
 
 import java.util.List;
 
 public class ActivitiesViewModel extends ViewModel {
-  private final DataAccsesLayer repository = DataAccsesLayer.getInstance();
+  private final DataAccessLayer repository = DataAccessLayer.getInstance();
 
   public LiveData<List<Activity>> getActivities() {
     return repository.getActivities();

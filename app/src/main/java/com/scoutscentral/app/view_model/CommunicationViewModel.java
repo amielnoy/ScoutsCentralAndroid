@@ -8,19 +8,19 @@ import androidx.lifecycle.ViewModel;
 
 import com.scoutscentral.app.model.Announcement;
 import com.scoutscentral.app.model.Scout;
-import com.scoutscentral.app.model.data.DataAccsesLayer;
+import com.scoutscentral.app.model.data.DataAccessLayer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CommunicationViewModel extends ViewModel {
-  private final DataAccsesLayer repository;
+  private final DataAccessLayer repository;
 
   public CommunicationViewModel() {
-    this(DataAccsesLayer.getInstance());
+    this(DataAccessLayer.getInstance());
   }
 
-  public CommunicationViewModel(DataAccsesLayer repository) {
+  public CommunicationViewModel(DataAccessLayer repository) {
     this.repository = repository;
   }
 

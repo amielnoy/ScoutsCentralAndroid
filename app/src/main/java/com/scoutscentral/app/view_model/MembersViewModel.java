@@ -5,12 +5,12 @@ import androidx.lifecycle.ViewModel;
 
 import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.model.ScoutLevel;
-import com.scoutscentral.app.model.data.DataAccsesLayer;
+import com.scoutscentral.app.model.data.DataAccessLayer;
 
 import java.util.List;
 
 public class MembersViewModel extends ViewModel {
-  private final DataAccsesLayer repository = DataAccsesLayer.getInstance();
+  private final DataAccessLayer repository = DataAccessLayer.getInstance();
 
   public LiveData<List<Scout>> getScouts() {
     return repository.getScouts();

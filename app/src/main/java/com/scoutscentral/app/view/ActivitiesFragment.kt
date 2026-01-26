@@ -21,7 +21,7 @@ import com.google.android.material.datepicker.*
 import com.google.android.material.snackbar.Snackbar
 import com.scoutscentral.app.R
 import com.scoutscentral.app.model.Scout as ScoutModel
-import com.scoutscentral.app.model.data.DataAccsesLayer
+import com.scoutscentral.app.model.data.DataAccessLayer
 import com.scoutscentral.app.view.adapter.ActivityRowAdapter
 import com.scoutscentral.app.view_model.ActivitiesViewModel
 import java.text.SimpleDateFormat
@@ -200,7 +200,7 @@ class ActivitiesFragment : Fragment(), ActivityRowAdapter.ActivityActionListener
     private fun showNewActivityAttendanceDialog(title: String, description: String, isoDate: String) {
         if (!isAdded) return
 
-        val repository = DataAccsesLayer.getInstance()
+        val repository = DataAccessLayer.getInstance()
         val scouts = (repository?.scouts?.value as? List<ScoutModel>) ?: return
         if (scouts.isEmpty()) {
             Snackbar.make(requireView(), "לא נמצאו חניכים במערכת", Snackbar.LENGTH_SHORT).show()
@@ -229,7 +229,7 @@ class ActivitiesFragment : Fragment(), ActivityRowAdapter.ActivityActionListener
 
     private fun onAttendance(activityModel: ScoutActivity) {
         if (!isAdded) return
-        val repository = DataAccsesLayer.getInstance()
+        val repository = DataAccessLayer.getInstance()
         val scouts = (repository?.scouts?.value as? List<ScoutModel>) ?: return
         val loading = Snackbar.make(requireView(), "טוען נוכחות...", Snackbar.LENGTH_INDEFINITE)
         loading.show()

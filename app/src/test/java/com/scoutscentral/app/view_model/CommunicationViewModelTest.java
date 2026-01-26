@@ -15,7 +15,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.scoutscentral.app.model.Scout;
 import com.scoutscentral.app.model.ScoutLevel;
-import com.scoutscentral.app.model.data.DataAccsesLayer;
+import com.scoutscentral.app.model.data.DataAccessLayer;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,12 +36,12 @@ public class CommunicationViewModelTest {
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     private CommunicationViewModel viewModel;
-    private DataAccsesLayer mockedDataRepository;
+    private DataAccessLayer mockedDataRepository;
     private Context mockContext;
 
     @Before
     public void setUp() {
-        mockedDataRepository = mock(DataAccsesLayer.class);
+        mockedDataRepository = mock(DataAccessLayer.class);
         mockContext = mock(Context.class);
         viewModel = new CommunicationViewModel(mockedDataRepository);
     }

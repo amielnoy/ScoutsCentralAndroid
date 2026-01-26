@@ -8,13 +8,12 @@ import com.scoutscentral.app.model.Announcement
 import com.scoutscentral.app.model.AttendanceRecord
 import com.scoutscentral.app.model.Scout as ScoutModel
 import com.scoutscentral.app.model.ScoutLevel
-import java.io.IOException
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.ZonedDateTime
 import java.util.*
 
-class DataAccsesLayer private constructor() {
+class DataAccessLayer private constructor() {
     private val _scouts = MutableLiveData<List<ScoutModel>>()
     val scouts: LiveData<List<ScoutModel>> = _scouts
 
@@ -243,12 +242,12 @@ class DataAccsesLayer private constructor() {
 
     companion object {
         @Volatile
-        private var instanceInternal: DataAccsesLayer? = null
+        private var instanceInternal: DataAccessLayer? = null
 
         @JvmStatic
-        fun getInstance(): DataAccsesLayer {
+        fun getInstance(): DataAccessLayer {
             return instanceInternal ?: synchronized(this) {
-                instanceInternal ?: DataAccsesLayer().also { instanceInternal = it }
+                instanceInternal ?: DataAccessLayer().also { instanceInternal = it }
             }
         }
     }

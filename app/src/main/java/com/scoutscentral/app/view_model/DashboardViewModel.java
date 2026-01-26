@@ -7,12 +7,12 @@ import com.scoutscentral.app.model.Activity;
 import com.scoutscentral.app.model.Announcement;
 import com.scoutscentral.app.model.AttendanceRecord;
 import com.scoutscentral.app.model.Scout;
-import com.scoutscentral.app.model.data.DataAccsesLayer;
+import com.scoutscentral.app.model.data.DataAccessLayer;
 
 import java.util.List;
 
 public class DashboardViewModel extends ViewModel {
-  private final DataAccsesLayer repository = DataAccsesLayer.getInstance();
+  private final DataAccessLayer repository = DataAccessLayer.getInstance();
 
   public LiveData<List<Scout>> getScouts() {
     return repository.getScouts();
